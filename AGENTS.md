@@ -1,9 +1,10 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# AGENTS.md — تعليمات مشروع سعودي دنت
 
-# This is NOT the Next.js you know
+هذا المشروع تجربة كشك تفاعلية كاملة الشاشة لفرعي سعودي دنت، وليس موقع شركة أو متجرًا تقليديًا.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+- حافظ على رحلة Attract → Map → Collection → Detail.
+- استخدم الصور الحقيقية الموجودة في `public/assets/branches`.
+- لا تنسب صورة فرع إلى الفرع الآخر.
+- لا تختلق صور أطباء أو ربطًا بالفرع من دون مادة معتمدة.
+- حافظ على RTL ودعم اللمس والوضع الأفقي والمعايرة.
+- أي تغيير في البيانات يكون داخل `src/data`، وأي أصل بصري داخل `public/assets`.

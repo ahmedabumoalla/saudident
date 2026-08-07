@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# تجربة سعودي دنت التفاعلية
 
-## Getting Started
+نسخة مبنية مباشرة على محرك مشروع **مداواة** نفسه، وليست موقع بطاقات أو متجر. تحتفظ بنفس تجربة الكشك ذات الشاشة الكاملة:
 
-First, run the development server:
+1. شاشة جذب سينمائية.
+2. خريطة عسير بنقطتين تفاعليتين لفرعي أبها وخميس مشيط.
+3. الدخول إلى الفرع ثم اختيار: العيادات، الأطباء، الخدمات، الجولة الداخلية.
+4. شاشة تفاصيل كاملة مع معرض صور متحرك وحركات GSAP.
+5. وضع عرض تلقائي، دعم اللمس، PWA، ووضع المعايرة `?calibrate=1`.
 
-```bash
+## التشغيل
+
+```powershell
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## الصور المدمجة
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+تم دمج الصور الحقيقية المتاحة داخل:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `public/assets/branches/abha`
+- `public/assets/branches/khamis-mushait`
 
-## Learn More
+واجهة خميس مشيط الخارجية مؤكدة ومستخدمة. لم تكن ضمن الحزمة صورة خارجية مؤكدة لفرع أبها، لذلك صورة بطل فرع أبها عبارة عن **تركيب عريض من الصور الداخلية الحقيقية** وليست مبنى مختلقًا.
 
-To learn more about Next.js, take a look at the following resources:
+## الهوية
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+الصورة المستخدمة في شاشة البداية مأخوذة من لوحة الشعار الحقيقية داخل فرع خميس مشيط:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `public/assets/brand/saudident-sign.webp`
 
-## Deploy on Vercel
+عند توفر ملف الشعار الرسمي الشفاف، يمكن استبدال هذا الملف أو تعديل `AttractScene` لاستخدامه.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## بيانات الأطباء
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+تم إدخال أسماء وتخصصات فريق سعودي دنت المنشورة في صفحة الفريق الرسمية، لكن **صور الأطباء وربط كل طبيب بالفرع وجدول المواعيد تحتاج اعتماد الإدارة**. لذلك تظهر بطاقات تعريفية أنيقة بالأحرف الأولى بدل اختلاق صور غير صحيحة.
+
+## الخريطة والصور الجوية
+
+- الخلفية الحالية خريطة تصميمية محلية داخل `public/assets/campus/saudident-region-map.svg` ولا تحتاج API أو اتصالًا بالإنترنت.
+- نقاط الفرعين قابلة للمعايرة عبر `?calibrate=1`.
+- عند توفر لقطة Google Maps مرخصة أو صورة جوية مولدة ومعتمدة، استبدل ملف الخريطة مع المحافظة على الاسم، أو عدّل مساره في `MapViewport` و`AttractScene`.
+
+## الملاحظات المهمة قبل التسليم النهائي
+
+- إضافة الشعار الرسمي PNG/SVG الشفاف.
+- إضافة الصور الجوية الجانبية المعتمدة لكل فرع.
+- إضافة صور الأطباء الرسمية وربط الطبيب بالفرع.
+- اعتماد النصوص وساعات العمل من إدارة سعودي دنت.
+## Interactive floor-plan note
+
+The Khamis Mushait floor-plan experience is a conceptual visual reconstruction based on the available branch reference imagery. It is an interactive visual tour, not an official engineering drawing or a source of exact dimensions.

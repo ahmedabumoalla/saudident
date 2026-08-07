@@ -1,0 +1,15 @@
+export const demoConfig = {
+  mapOverviewMs: 1600,
+  mapBranchFocusMs: 2600,
+  branchLandingMs: 3500,
+  collectionOverviewMs: 2600,
+  detailIntroMs: 700,
+  imageHoldMs: 1800,
+  finalImageHoldMs: 900,
+  detailTransitionMs: 950,
+  categoryTransitionMs: 1200,
+  branchClosingMs: 2500,
+  mapReturnMs: 2200,
+  transitionOutMs: 480,
+  transitionInMs: 560,
+} as const;
