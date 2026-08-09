@@ -1,4 +1,0 @@
-import { Activity, Baby, Bone, Building2, CalendarDays, Camera, CircleDot, HeartHandshake, MapPin, Microscope, Phone, ScanLine, ShieldCheck, SmilePlus, Sparkles, Stethoscope, TestTube2, UserRound, Waves, Armchair, DoorOpen } from "lucide-react";
-import type { ReactNode } from "react";import type { ExperienceIconName } from "@/types/experience";
-const iconRegistry:Record<ExperienceIconName,ReactNode>={activity:<Activity/>,baby:<Baby/>,bone:<Bone/>,building:<Building2/>,calendar:<CalendarDays/>,camera:<Camera/>,dentistry:<SmilePlus/>,doctor:<UserRound/>,implant:<ScanLine/>,lab:<TestTube2/>,"map-pin":<MapPin/>,microscope:<Microscope/>,orthodontics:<Waves/>,phone:<Phone/>,reception:<DoorOpen/>,"root-canal":<Stethoscope/>,shield:<ShieldCheck/>,sparkles:<Sparkles/>,tooth:<SmilePlus/>,treatment:<HeartHandshake/>,waiting:<Armchair/>};
-export function ExperienceIcon({name}:{name?:ExperienceIconName}){return name?iconRegistry[name]:<CircleDot/>}

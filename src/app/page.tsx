@@ -1,2 +1,5 @@
-import { ExperienceShell } from "@/components/experience/experience-shell";
-export default function Home() { return <ExperienceShell/>; }
+import { CinematicExperience } from "@/components/saudident/CinematicExperience";
+
+export default function Home() {
+  return <CinematicExperience />;
+}

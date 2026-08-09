@@ -1,1 +1,17 @@
-import type { MetadataRoute } from "next";export default function manifest():MetadataRoute.Manifest{return{name:"تجربة سعودي دنت التفاعلية",short_name:"سعودي دنت",description:"جولة تفاعلية في فرعي سعودي دنت بأبها وخميس مشيط",start_url:"/",display:"standalone",background_color:"#171818",theme_color:"#171818",orientation:"landscape",icons:[{src:"/icon-192.png",sizes:"192x192",type:"image/png",purpose:"any"},{src:"/icon-512.png",sizes:"512x512",type:"image/png",purpose:"any"}]}}
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "سعودي دنت | Saudi Dent",
+    short_name: "سعودي دنت",
+    description: "طب الأسنان الحديث بتخصصاته تحت سقف واحد.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#02070b",
+    theme_color: "#073245",
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+    ],
+  };
+}
