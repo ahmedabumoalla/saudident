@@ -1,20 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Pause, Play, RotateCcw } from "lucide-react";
+import { MapPin, Pause, Play } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Map as MapboxMap, Marker as MapboxMarker } from "mapbox-gl";
-import { KhamisFloorExperience } from "@/components/saudident/KhamisFloorExperience";
+import { BranchInteractiveScenes } from "@/components/saudident/BranchInteractiveScenes";
+import type { BranchSceneId } from "@/data/branch-interactive-scenes";
 import { branches } from "@/data/saudident";
-import {
-  DEMO_CONTENT_MS,
-  khamisFloorHotspots,
-  type DemoDetailFrame,
-  type FloorHotspot,
-} from "@/data/khamis-floor-map";
 
-type BranchId = "khamis" | "abha";
-type MapFirstScene = "map" | "focusing" | "floor" | "abha";
+type BranchId = BranchSceneId;
+type MapFirstScene = "map" | "focusing" | "branch";
+export type PresentationPhase = "branches" | "branch" | "scene" | "hotspot" | "detail";
+
+type MapFirstExperienceProps = {
+  presentationMode?: boolean;
+  onPresentationPhaseChange?: (phase: PresentationPhase) => void;
+};
 
 const branchCoordinates: Record<BranchId, [number, number]> = {
   khamis: [42.6963958, 18.3042106],
@@ -28,10 +29,12 @@ const overviewBounds: [[number, number], [number, number]] = [
 
 type PendingWait = { timer: number; resolve: (active: boolean) => void };
 type PendingMove = { cancel: () => void };
-const DEMO_CAMERA_SETTLE_MS = 1600;
-const DEMO_FRAME_TRANSITION_MS = 440;
+const DEMO_MAP_HOLD_MS = 3000;
 
-export function MapFirstExperience() {
+export function MapFirstExperience({
+  presentationMode = false,
+  onPresentationPhaseChange,
+}: MapFirstExperienceProps = {}) {
   const rootRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapboxMap | null>(null);
@@ -43,9 +46,7 @@ export function MapFirstExperience() {
   const pendingWaitRef = useRef<PendingWait | null>(null);
   const pendingMoveRef = useRef<PendingMove | null>(null);
   const [scene, setScene] = useState<MapFirstScene>("map");
-  const [selectedHotspot, setSelectedHotspot] = useState<FloorHotspot | null>(null);
-  const [galleryIndex, setGalleryIndex] = useState(0);
-  const [demoFrame, setDemoFrame] = useState<DemoDetailFrame | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<BranchId>("khamis");
   const [demoActive, setDemoActive] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState(false);
@@ -85,12 +86,9 @@ export function MapFirstExperience() {
     });
   }, []);
 
-  const showOverview = useCallback((manual = true) => {
-    if (manual) stopDemo();
+  const showOverview = useCallback(() => {
+    stopDemo();
     actionSessionRef.current += 1;
-    setSelectedHotspot(null);
-    setGalleryIndex(0);
-    setDemoFrame(null);
     setScene("map");
     window.requestAnimationFrame(() => fitOverview(
       window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 220 : 1200,
@@ -100,9 +98,7 @@ export function MapFirstExperience() {
   const focusBranch = useCallback(async (id: BranchId, manual = true) => {
     if (manual) stopDemo();
     const action = ++actionSessionRef.current;
-    setSelectedHotspot(null);
-    setGalleryIndex(0);
-    setDemoFrame(null);
+    setSelectedBranch(id);
     setScene("focusing");
     const map = mapRef.current;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -133,7 +129,7 @@ export function MapFirstExperience() {
     }
 
     if (actionSessionRef.current !== action) return;
-    setScene(id === "khamis" ? "floor" : "abha");
+    setScene("branch");
   }, [stopDemo]);
 
   useEffect(() => {
@@ -200,19 +196,21 @@ export function MapFirstExperience() {
   }, []);
 
   useEffect(() => {
-    if (scene !== "abha") return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") showOverview();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [scene, showOverview]);
+    if (!onPresentationPhaseChange) return;
+    if (scene === "map") {
+      onPresentationPhaseChange("branches");
+      return;
+    }
+    if (scene === "focusing") {
+      onPresentationPhaseChange("branch");
+    }
+  }, [onPresentationPhaseChange, scene]);
 
   const isDemoActive = useCallback((session: number) => (
     demoActiveRef.current && demoSessionRef.current === session
   ), []);
 
-  const waitForDemo = useCallback((session: number, duration = DEMO_CONTENT_MS) => new Promise<boolean>((resolve) => {
+  const waitForDemo = useCallback((session: number, duration = DEMO_MAP_HOLD_MS) => new Promise<boolean>((resolve) => {
     if (!isDemoActive(session)) { resolve(false); return; }
     const timer = window.setTimeout(() => {
       pendingWaitRef.current = null;
@@ -258,58 +256,27 @@ export function MapFirstExperience() {
   }), [isDemoActive]);
 
   const runDemo = useCallback(async (session: number) => {
-    const orderedHotspots = [...khamisFloorHotspots].sort((a, b) => a.demoOrder - b.demoOrder);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setSelectedBranch("khamis");
+    setScene("map");
+    if (!await moveMapForDemo(session, (map) => {
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      map.resize();
+      map.fitBounds(overviewBounds, { padding: mobile ? 52 : 105, duration: reducedMotion ? 220 : 1200, pitch: 0, bearing: 0 });
+    })) return;
+    if (!await waitForDemo(session)) return;
 
-    while (isDemoActive(session)) {
-      setSelectedHotspot(null);
-      setGalleryIndex(0);
-      setDemoFrame(null);
-      setScene("map");
-      if (!await moveMapForDemo(session, (map) => {
-        const mobile = window.matchMedia("(max-width: 767px)").matches;
-        map.resize();
-        map.fitBounds(overviewBounds, { padding: mobile ? 52 : 105, duration: reducedMotion ? 220 : 1200, pitch: 0, bearing: 0 });
-      })) return;
-      if (!await waitForDemo(session)) return;
-
-      setScene("focusing");
-      if (!await moveMapForDemo(session, (map) => map.flyTo({
-        center: branchCoordinates.khamis,
-        zoom: 16.7,
-        pitch: 49,
-        bearing: -5,
-        duration: reducedMotion ? 240 : 2200,
-        essential: true,
-      }))) return;
-      setScene("floor");
-      if (!await waitForDemo(session)) return;
-
-      for (const hotspot of orderedHotspots) {
-        setSelectedHotspot(hotspot);
-        setGalleryIndex(0);
-        setDemoFrame(null);
-        if (!await waitForDemo(session, DEMO_CAMERA_SETTLE_MS)) return;
-        const frames: DemoDetailFrame[] = hotspot.kind === "clinic"
-          ? ["doctor", "services", "offers", "equipment"]
-          : hotspot.kind === "reception"
-            ? ["photo", "booking", "offers"]
-            : hotspot.kind === "radiology" || hotspot.kind === "sterilization"
-              ? ["equipment"]
-              : hotspot.gallery?.length
-                ? ["photo"]
-                : ["info"];
-        for (const frame of frames) {
-          setDemoFrame(frame);
-          if (!await waitForDemo(session, DEMO_CONTENT_MS + DEMO_FRAME_TRANSITION_MS)) return;
-        }
-      }
-
-      setSelectedHotspot(null);
-      setGalleryIndex(0);
-      setDemoFrame(null);
-      if (!await waitForDemo(session)) return;
-    }
+    setScene("focusing");
+    if (!await moveMapForDemo(session, (map) => map.flyTo({
+      center: branchCoordinates.khamis,
+      zoom: 16.7,
+      pitch: 49,
+      bearing: -5,
+      duration: reducedMotion ? 240 : 2200,
+      essential: true,
+    }))) return;
+    if (!isDemoActive(session)) return;
+    setScene("branch");
   }, [isDemoActive, moveMapForDemo, waitForDemo]);
 
   const startDemo = useCallback(() => {
@@ -323,21 +290,8 @@ export function MapFirstExperience() {
 
   useEffect(() => () => stopDemo(), [stopDemo]);
 
-  const handleHotspotSelect = (hotspot: FloorHotspot) => {
-    setSelectedHotspot(hotspot);
-    setGalleryIndex(0);
-    setDemoFrame(null);
-  };
-
-  const handleFloorBack = () => {
-    stopDemo();
-    setSelectedHotspot(null);
-    setGalleryIndex(0);
-    setDemoFrame(null);
-  };
-
   return (
-    <div ref={rootRef} className={`sd-map-first is-${scene}${demoActive ? " is-demo" : ""}`} dir="rtl">
+    <div ref={rootRef} className={`sd-map-first is-${scene}${demoActive ? " is-demo" : ""}${presentationMode ? " is-presentation" : ""}`} dir="rtl">
       <div className="sd-map-first__chrome">
         <Image
           src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
@@ -364,30 +318,14 @@ export function MapFirstExperience() {
 
         {scene === "map" && <p className="sd-map-first__hint">اختر فرعًا من الخريطة</p>}
 
-        {scene === "floor" && (
-          <KhamisFloorExperience
-            selectedHotspot={selectedHotspot}
-            galleryIndex={galleryIndex}
+        {scene === "branch" && (
+          <BranchInteractiveScenes
+            branchId={selectedBranch}
             demoActive={demoActive}
-            demoFrame={demoFrame}
-            onSelectHotspot={handleHotspotSelect}
-            onGalleryIndex={setGalleryIndex}
-            onBackToOverview={handleFloorBack}
             onReturnToBranches={() => showOverview()}
             onUserInteraction={stopDemo}
+            onPresentationPhaseChange={onPresentationPhaseChange}
           />
-        )}
-
-        {scene === "abha" && (
-          <section className="sd-abha-soon" aria-labelledby="sd-abha-soon-title">
-            <span>سعودي دنت</span>
-            <h1 id="sd-abha-soon-title">فرع أبها</h1>
-            <p>قريبًا</p>
-            <button type="button" className="sd-floor-control" onClick={() => showOverview()}>
-              <RotateCcw aria-hidden />
-              رجوع للخريطة
-            </button>
-          </section>
         )}
       </main>
     </div>
