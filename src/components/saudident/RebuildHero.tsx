@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BranchMapSection } from "@/components/saudident/BranchMapSection";
+import { CinematicOpening } from "@/components/saudident/CinematicOpening";
 import { doctors, type SaudiDentDoctor } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const LANDING_EXPERIENCE_VARIANT: "baseline" | "mapbox-cinematic" = "mapbox-cinematic";
+const CINEMATIC_OPENING_ENABLED = true;
 const ROTATION_INTERVAL = 3000;
 const SHOWCASE_SIZE = 3;
 
@@ -20,6 +22,10 @@ export function RebuildHero() {
   const heroRef = useRef<HTMLElement>(null);
   const [rotationStart, setRotationStart] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [openingComplete, setOpeningComplete] = useState(!CINEMATIC_OPENING_ENABLED);
+  const [rotationActive, setRotationActive] = useState(false);
+
+  const completeOpening = useCallback(() => setOpeningComplete(true), []);
 
   const visibleDoctors = useMemo(
     () => Array.from(
@@ -30,17 +36,18 @@ export function RebuildHero() {
   );
 
   useEffect(() => {
-    if (isPaused || showcaseDoctors.length <= SHOWCASE_SIZE) return;
+    if (isPaused || !openingComplete || showcaseDoctors.length <= SHOWCASE_SIZE) return;
 
     const interval = window.setInterval(() => {
+      setRotationActive(true);
       setRotationStart((current) => (current + SHOWCASE_SIZE) % showcaseDoctors.length);
     }, ROTATION_INTERVAL);
 
     return () => window.clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, openingComplete]);
 
   useGSAP(() => {
-    if (LANDING_EXPERIENCE_VARIANT === "baseline" || !heroRef.current) return;
+    if (LANDING_EXPERIENCE_VARIANT === "baseline" || !openingComplete || !heroRef.current) return;
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: heroRef.current,
@@ -52,11 +59,18 @@ export function RebuildHero() {
     timeline
       .to(".sd-rebuild-hero__doctors", { y: 48, autoAlpha: 0.18, ease: "none" }, 0)
       .to(".sd-rebuild-hero__copy", { y: 24, autoAlpha: 0.42, ease: "none" }, 0);
-  }, { scope: heroRef });
+  }, { scope: heroRef, dependencies: [openingComplete], revertOnUpdate: true });
+
+  const heroClassName = [
+    "sd-rebuild-hero",
+    CINEMATIC_OPENING_ENABLED ? "sd-rebuild-hero--cinematic" : "sd-rebuild-hero--baseline",
+    openingComplete ? "is-opening-complete" : "is-opening-active",
+    rotationActive ? "is-rotation-active" : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <>
-      <main ref={heroRef} className="sd-rebuild-hero" id="main-content" aria-labelledby="sd-rebuild-hero-title">
+      <main ref={heroRef} className={heroClassName} id="main-content" aria-labelledby="sd-rebuild-hero-title">
         <div className="sd-rebuild-hero__copy">
           <h1 id="sd-rebuild-hero-title">
             <span>ابتسامتك</span>
@@ -95,6 +109,10 @@ export function RebuildHero() {
             </article>
           ))}
         </div>
+
+        {CINEMATIC_OPENING_ENABLED && !openingComplete && (
+          <CinematicOpening onComplete={completeOpening} />
+        )}
       </main>
 
       {LANDING_EXPERIENCE_VARIANT === "mapbox-cinematic" && (
