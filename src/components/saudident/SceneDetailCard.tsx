@@ -4,6 +4,7 @@ import Image from "next/image";
 import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { BranchSceneHotspot } from "@/data/branch-interactive-scenes";
 import { saudident } from "@/data/saudident";
+import { PremiumSceneDetail } from "@/components/saudident/PremiumSceneDetail";
 
 type SceneDetailCardProps = {
   hotspot: BranchSceneHotspot;
@@ -18,6 +19,10 @@ export function SceneDetailCard({
   onGalleryIndex,
   onClose,
 }: SceneDetailCardProps) {
+  if (hotspot.contentKind) {
+    return <PremiumSceneDetail hotspot={hotspot} onClose={onClose} />;
+  }
+
   const gallery = hotspot.gallery ?? [];
   const activeImage = gallery[galleryIndex];
 
