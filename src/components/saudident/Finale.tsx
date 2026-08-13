@@ -9,8 +9,8 @@ export function Finale({ onConsultation }: { onConsultation: () => void }) {
         <Image className="sd-finale__watermark" src="/branding/intro/SaudiDent_MASTER_transparent_4K.png" alt="" width={4096} height={1139} unoptimized aria-hidden="true" />
         <div className="sd-finale__content" data-reveal>
           <p className="sd-eyebrow">خطوتك التالية</p>
-          <h2 id="finale-title">ابتسامتك تبدأ<br />بقرار.</h2>
-          <p>اختر موعدك، واترك لفريق سعودي دنت تفاصيل العناية.</p>
+          <h2 id="finale-title">ابتسامتك تبدأ<br />بقرار</h2>
+          <p>اختر موعدك، واترك لفريق سعودي دنت تفاصيل العناية</p>
           <div className="sd-finale__actions">
             <a className="sd-button sd-button--primary" href={saudident.appointment.url} target="_blank" rel="noreferrer">
               احجز موعدك <ArrowUpLeft aria-hidden />
@@ -22,7 +22,7 @@ export function Finale({ onConsultation }: { onConsultation: () => void }) {
       <footer className="sd-footer">
         <div className="sd-footer__brand">
           <Image src="/branding/intro/SaudiDent_MASTER_transparent_4K.png" alt="سعودي دنت" width={4096} height={1139} sizes="180px" unoptimized />
-          <p>طب الأسنان الحديث بتخصصاته تحت سقف واحد.</p>
+          <p>طب الأسنان الحديث بتخصصاته تحت سقف واحد</p>
           <small>خميس مشيط · أبها</small>
         </div>
         <div className="sd-footer__contact">

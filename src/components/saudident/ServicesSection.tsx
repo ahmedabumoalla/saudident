@@ -17,7 +17,7 @@ export function ServicesSection() {
       </div>
       <header className="sd-services__heading" data-reveal>
         <p className="sd-eyebrow">القوس العلاجي</p>
-        <h2 id="services-title">كل تخصصات الأسنان.<br />في منظومة واحدة.</h2>
+        <h2 id="services-title">كل تخصصات الأسنان.<br />في منظومة واحدة</h2>
       </header>
       <div className="sd-services__experience" data-reveal>
         <div
@@ -64,7 +64,7 @@ export function ServicesSection() {
           <span className="sd-services__count">{String(active + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}</span>
           <div className="sd-services__icon" key={`${service.id}-icon`}><DentalIcon name={service.icon} /></div>
           <h3 key={`${service.id}-title`}>{service.title}</h3>
-          <p key={`${service.id}-description`}>{service.description ?? "مدرجة ضمن قائمة خدمات سعودي دنت الرسمية."}</p>
+          <p key={`${service.id}-description`}>{service.description ?? "مدرجة ضمن قائمة خدمات سعودي دنت الرسمية"}</p>
           <div className="sd-services__controls">
             <button type="button" onClick={() => selectRelative(-1)} aria-label="الخدمة السابقة"><ArrowRight aria-hidden /></button>
             <button type="button" onClick={() => selectRelative(1)} aria-label="الخدمة التالية"><ArrowLeft aria-hidden /></button>

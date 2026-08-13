@@ -231,7 +231,7 @@ function DoctorsOverlay({ open, onClose, openerRef }: DoctorsOverlayProps) {
             <div className="sd-doctors-empty" role="status">
               <Users aria-hidden="true" />
               <h3>لم نجد نتيجة مطابقة</h3>
-              <p>جرّب كتابة اسم آخر أو اختر كل التخصصات.</p>
+              <p>جرّب كتابة اسم آخر أو اختر كل التخصصات</p>
               <button
                 type="button"
                 className="sd-text-button"

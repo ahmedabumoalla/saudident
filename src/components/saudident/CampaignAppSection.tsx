@@ -8,8 +8,8 @@ import { gsap, useGSAP } from "@/lib/gsap";
 
 const campaign = {
   eyebrow: "تطبيق سعودي دنت",
-  title: "القرار قرارك.",
-  body: "اختر طبيبك. احجز موعدك. وتابع حجوزاتك من مكان واحد.",
+  title: "القرار قرارك",
+  body: "اختر طبيبك. احجز موعدك. وتابع حجوزاتك من مكان واحد",
   artwork: undefined as string | undefined,
   icon: "/media/app/app-icon.png",
   ctas: [
@@ -131,7 +131,7 @@ export function CampaignAppSection() {
 
           <h2 id="sd-campaign-title" aria-label={campaign.title} data-campaign-copy>
             <span aria-hidden="true">القرار</span>
-            <span aria-hidden="true">قرارك.</span>
+            <span aria-hidden="true">قرارك</span>
           </h2>
 
           <p className="sd-campaign__body" data-campaign-copy>{campaign.body}</p>

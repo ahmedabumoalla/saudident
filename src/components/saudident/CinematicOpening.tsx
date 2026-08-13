@@ -140,10 +140,10 @@ export function CinematicOpening({ onComplete }: CinematicOpeningProps) {
       <div className="sd-cinematic-opening__veil" />
       <div className="sd-cinematic-opening__copy">
         <p className="sd-cinematic-opening__line sd-cinematic-opening__line--first">
-          الابتسامة لا تبدأ من الأسنان.
+          الابتسامة لا تبدأ من الأسنان
         </p>
         <p className="sd-cinematic-opening__line sd-cinematic-opening__line--second">
-          تبدأ من <span>الثقة</span> بمن يعالجها.
+          تبدأ من <span>الثقة</span> بمن يعالجها
         </p>
       </div>
     </div>

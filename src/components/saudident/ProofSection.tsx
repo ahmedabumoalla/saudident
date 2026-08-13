@@ -8,7 +8,7 @@ export function ProofSection() {
       </div>
       <div className="sd-section__heading" data-reveal>
         <p className="sd-eyebrow">أرقام من واقع سعودي دنت</p>
-        <h2 id="proof-title">خبرة تنمو.<br />وحضور يتّسع.</h2>
+        <h2 id="proof-title">خبرة تنمو.<br />وحضور يتّسع</h2>
       </div>
       <div className="sd-proof__installation">
         <svg className="sd-proof__arch" viewBox="0 0 1000 430" fill="none" aria-hidden="true">

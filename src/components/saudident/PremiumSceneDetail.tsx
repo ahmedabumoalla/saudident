@@ -29,14 +29,16 @@ const featuredServices = services.slice(0, 6);
 
 function SaudiDentLogo() {
   return (
-    <Image
-      className="sd-premium-detail__logo"
-      src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
-      alt="سعودي دنت"
-      width={180}
-      height={50}
-      priority
-    />
+    <span className="sd-premium-detail__logo-wrap">
+      <Image
+        className="sd-premium-detail__logo"
+        src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+        alt="سعودي دنت"
+        width={180}
+        height={50}
+        priority
+      />
+    </span>
   );
 }
 
@@ -177,7 +179,7 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
         <figure className="sd-premium-focus__image is-contained">
           <Image src="/saudident/scenes/coffee-01.jpg" alt="الكوفي في فرع سعودي دنت بخميس مشيط" fill sizes="(max-width: 767px) 96vw, 660px" />
         </figure>
-        <p>استراحة خفيفة ضمن تجربة فرع خميس مشيط.</p>
+        <p>استراحة خفيفة ضمن تجربة فرع خميس مشيط</p>
       </div>
     );
   }
@@ -185,15 +187,17 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
   if (hotspot.contentKind === "waiting") {
     return (
       <div className="sd-premium-waiting">
-        <Image
-          className="sd-premium-waiting__logo"
-          src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
-          alt="سعودي دنت"
-          width={4096}
-          height={1139}
-          priority
-        />
-        <p className="sd-premium-waiting__message">أهلًا بك في سعودي دنت، راحتك تبدأ من لحظة وصولك. خذ وقتك، وفريقنا معك في كل خطوة نحو ابتسامة أكثر صحة وثقة.</p>
+        <div className="sd-premium-waiting__brand">
+          <Image
+            className="sd-premium-waiting__logo"
+            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            alt="سعودي دنت"
+            width={4096}
+            height={1139}
+            priority
+          />
+        </div>
+        <p className="sd-premium-waiting__message">أهلًا بك في سعودي دنت، راحتك تبدأ من لحظة وصولك. خذ وقتك، وفريقنا معك في كل خطوة نحو ابتسامة أكثر صحة وثقة</p>
       </div>
     );
   }
@@ -201,14 +205,16 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
   if (hotspot.contentKind === "waiting-welcome") {
     return (
       <div className="sd-premium-waiting">
-        <Image
-          className="sd-premium-waiting__logo"
-          src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
-          alt="سعودي دنت"
-          width={4096}
-          height={1139}
-          priority
-        />
+        <div className="sd-premium-waiting__brand">
+          <Image
+            className="sd-premium-waiting__logo"
+            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            alt="سعودي دنت"
+            width={4096}
+            height={1139}
+            priority
+          />
+        </div>
         <p className="sd-premium-waiting__message">{hotspot.description}</p>
       </div>
     );

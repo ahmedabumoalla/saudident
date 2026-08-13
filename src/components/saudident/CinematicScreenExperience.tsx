@@ -10,11 +10,11 @@ import { doctors, type SaudiDentDoctor } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const JOURNEY: { phase: PresentationPhase; label: string; caption: string }[] = [
-  { phase: "branches", label: "اختر الفرع", caption: "ابدأ باختيار الفرع الذي ترغب باستكشافه." },
-  { phase: "branch", label: "ادخل الفرع", caption: "انتقال سينمائي إلى تجربة الفرع." },
-  { phase: "scene", label: "استكشف الأقسام", caption: "تنقّل بين المشاهد الحقيقية لأقسام الفرع." },
-  { phase: "hotspot", label: "اختر النقطة", caption: "المس أي نقطة حيّة داخل المشهد لمعرفة المزيد." },
-  { phase: "detail", label: "شاهد التفاصيل", caption: "تعرّف على الخدمات والتجهيزات والصور المتاحة." },
+  { phase: "branches", label: "اختر الفرع", caption: "ابدأ باختيار الفرع الذي ترغب باستكشافه" },
+  { phase: "branch", label: "ادخل الفرع", caption: "انتقال سينمائي إلى تجربة الفرع" },
+  { phase: "scene", label: "استكشف الأقسام", caption: "تنقّل بين المشاهد الحقيقية لأقسام الفرع" },
+  { phase: "hotspot", label: "اختر النقطة", caption: "المس أي نقطة حيّة داخل المشهد لمعرفة المزيد" },
+  { phase: "detail", label: "شاهد التفاصيل", caption: "تعرّف على الخدمات والتجهيزات والصور المتاحة" },
 ];
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
@@ -212,10 +212,10 @@ export function CinematicScreenExperience() {
         <section className="sd-screen-opening" aria-label="افتتاحية سعودي دنت">
           <div className="sd-screen-opening__copy">
             <p className="sd-screen-opening__line sd-screen-opening__line--first">
-              الابتسامة لا تبدأ من الأسنان.
+              الابتسامة لا تبدأ من الأسنان
             </p>
             <p className="sd-screen-opening__line sd-screen-opening__line--second">
-              تبدأ من <span>الثقة</span> بمن يعالجها.
+              تبدأ من <span>الثقة</span> بمن يعالجها
             </p>
           </div>
 

@@ -220,7 +220,7 @@ function OffersCard() {
   return (
     <section className="sd-floor-offers">
       <h3>العروض الحالية عبر تطبيق سعودي دنت</h3>
-      <p>اطّلع على الخيارات المتاحة واحجز موعدك من التطبيق.</p>
+      <p>اطّلع على الخيارات المتاحة واحجز موعدك من التطبيق</p>
       <AppLinks />
     </section>
   );
@@ -295,7 +295,7 @@ function FacilityDetail({
       {hotspot.gallery?.length ? (
         <FloorGallery images={hotspot.gallery} index={galleryIndex} demoActive={demoActive} onIndex={onGalleryIndex} onUserInteraction={onUserInteraction} />
       ) : (
-        <div className="sd-facility-detail__map-note">يظهر موقع المساحة محددًا على مخطط الفرع.</div>
+        <div className="sd-facility-detail__map-note">يظهر موقع المساحة محددًا على مخطط الفرع</div>
       )}
       {hotspot.description && <p>{hotspot.description}</p>}
       {equipment.length > 0 && <EquipmentList items={equipment} />}

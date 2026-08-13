@@ -8,8 +8,8 @@ export function StorySection() {
       </div>
       <header className="sd-story__intro" data-reveal>
         <p className="sd-eyebrow">The nerve line story</p>
-        <h2 id="story-title">رؤيةٌ تسري<br />في كل تفصيل.</h2>
-        <p>سعودي دنت عيادات أسنان استشارية تجمع تخصصات طب الأسنان الحديث تحت سقف واحد.</p>
+        <h2 id="story-title">رؤيةٌ تسري<br />في كل تفصيل</h2>
+        <p>سعودي دنت عيادات أسنان استشارية تجمع تخصصات طب الأسنان الحديث تحت سقف واحد</p>
       </header>
       <div className="sd-story__journey">
         <svg className="sd-story__nerve" viewBox="0 0 180 1000" preserveAspectRatio="none" aria-hidden="true">

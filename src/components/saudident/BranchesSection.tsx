@@ -10,7 +10,7 @@ export function BranchesSection() {
       </div>
       <header className="sd-branches__heading" data-reveal>
         <p className="sd-eyebrow">في قلب عسير</p>
-        <h2 id="branches-title">مكانان.<br />معيار واحد.</h2>
+        <h2 id="branches-title">مكانان.<br />معيار واحد</h2>
       </header>
       <div className="sd-branches__split">
         {branches.map((branch, index) => (

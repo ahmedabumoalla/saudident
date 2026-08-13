@@ -46,7 +46,7 @@ export function ConsultationSheet({ open, onClose }: { open: boolean; onClose: (
         </button>
         <p className="sd-eyebrow">تواصل معنا</p>
         <h2 id="consultation-title">اطلب استشارة</h2>
-        <p>اختر وسيلة التواصل المناسبة، وسيجيبك فريق سعودي دنت.</p>
+        <p>اختر وسيلة التواصل المناسبة، وسيجيبك فريق سعودي دنت</p>
         <div className="sd-consultation__links">
           <a href={saudident.contact.phoneUrl}>
             <Phone aria-hidden /><span><small>اتصال</small>{saudident.contact.phoneDisplay}</span>

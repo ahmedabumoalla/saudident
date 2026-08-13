@@ -4498,6 +4498,15 @@ video {
   grid-template-columns: minmax(0, 1fr) 32px;
 }
 
+.sd-premium-detail__logo-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  padding: 0.28rem 0.48rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #123f4d, #1d7184);
+}
+
 .sd-premium-detail__logo {
   width: min(100%, 132px);
   height: auto;
@@ -4802,6 +4811,16 @@ video {
   gap: clamp(0.65rem, 1.4vw, 1rem);
   padding: clamp(0.7rem, 2vw, 1.35rem) 0;
   text-align: center;
+}
+
+.sd-premium-waiting__brand {
+  display: grid;
+  place-items: center;
+  width: min(100%, 280px);
+  padding: 0.45rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #123f4d, #1d7184);
+  box-shadow: 0 10px 24px rgba(11, 66, 80, 0.14);
 }
 
 .sd-premium-waiting__logo {
