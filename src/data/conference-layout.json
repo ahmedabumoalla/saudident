@@ -1,0 +1,255 @@
+{
+  "hall:sd-conference-floor-arrow--far": {
+    "x": 69,
+    "y": 71.38,
+    "scale": 1.2
+  },
+  "hall:sd-conference-floor-arrow--near": {
+    "x": 41,
+    "y": 64.1,
+    "scale": 1.2,
+    "angle": -90,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "reception:sd-patient-relations-hotspot": {
+    "x": 14,
+    "y": 61,
+    "scale": 1
+  },
+  "reception:sd-conference-forward": {
+    "x": 52.48,
+    "y": 70,
+    "scale": 1
+  },
+  "main-reception:sd-main-reception-forward": {
+    "x": 58.75,
+    "y": 56,
+    "scale": 1
+  },
+  "main-reception:sd-main-scene-hotspot--welcome": {
+    "x": 28,
+    "y": 59.5,
+    "scale": 1
+  },
+  "main-reception:sd-main-scene-hotspot--lounge": {
+    "x": 91.25,
+    "y": 54.51,
+    "scale": 1
+  },
+  "clinic-corridor:sd-clinic-corridor-forward": {
+    "x": 44.5,
+    "y": 57.15,
+    "scale": 1
+  },
+  "clinic-corridor:sd-corridor-hotspot--sterilization": {
+    "x": 54.35,
+    "y": 37.06,
+    "scale": 0.5
+  },
+  "clinic-corridor:sd-corridor-hotspot--clinic-mid": {
+    "x": 59.1,
+    "y": 47.56,
+    "scale": 0.5
+  },
+  "clinic-corridor:sd-corridor-hotspot--clinic-near": {
+    "x": 79.05,
+    "y": 53.08,
+    "scale": 1
+  },
+  "clinic-corridor:sd-corridor-hotspot--equipment": {
+    "x": 29.43,
+    "y": 52.21,
+    "scale": 0.8
+  },
+  "clinic-corridor:sd-corridor-hotspot--clinic-far": {
+    "x": 43.38,
+    "y": 50.43,
+    "scale": 1
+  },
+  "prayer-corridor:sd-prayer-corridor-hotspot--meeting": {
+    "x": 34.6,
+    "y": 47.92,
+    "scale": 0.7
+  },
+  "prayer-corridor:sd-prayer-corridor-hotspot--prayer": {
+    "x": 71.18,
+    "y": 58.07,
+    "scale": 1
+  },
+  "xray-corridor:sd-xray-corridor-hotspot--women-lounge": {
+    "x": 59.55,
+    "y": 50.5,
+    "scale": 0.8
+  },
+  "xray-corridor:sd-xray-corridor-hotspot--clinic": {
+    "x": 67.08,
+    "y": 55.83,
+    "scale": 1
+  },
+  "xray-corridor:sd-xray-corridor-hotspot--radiology": {
+    "x": 18.28,
+    "y": 59.2,
+    "scale": 1
+  },
+  "xray-corridor:sd-xray-corridor-forward": {
+    "x": 50.28,
+    "y": 66.5,
+    "scale": 1.3
+  },
+  "xray-corridor-next:sd-xray-next-forward": {
+    "x": 33.56,
+    "y": 72.91,
+    "scale": 1
+  },
+  "xray-corridor-next:sd-xray-next-hotspot--center": {
+    "x": 49.18,
+    "y": 51.38,
+    "scale": 0.7
+  },
+  "xray-corridor-next:sd-xray-next-hotspot--right": {
+    "x": 68.3,
+    "y": 52.67,
+    "scale": 0.9
+  },
+  "xray-corridor-next:sd-xray-next-hotspot--left": {
+    "x": 28.83,
+    "y": 53.3,
+    "scale": 0.9
+  },
+  "xray-corridor-third:sd-xray-third-hotspot--center": {
+    "x": 57.08,
+    "y": 49.57,
+    "scale": 0.6
+  },
+  "xray-corridor-third:sd-xray-third-hotspot--right": {
+    "x": 77.4,
+    "y": 55.56,
+    "scale": 1.2
+  },
+  "xray-corridor-third:sd-xray-third-forward": {
+    "x": 51.35,
+    "y": 63.94,
+    "scale": 1.5
+  },
+  "xray-corridor-fourth:sd-xray-fourth-side-forward": {
+    "x": 32.72,
+    "y": 67.26,
+    "scale": 1.5
+  },
+  "xray-corridor-fourth:sd-xray-fourth-forward": {
+    "x": 49.6,
+    "y": 63.4,
+    "scale": 1
+  },
+  "xray-corridor-fourth:sd-xray-fourth-hotspot--call-center": {
+    "x": 27.22,
+    "y": 40.49,
+    "scale": 0.6
+  },
+  "xray-corridor-fifth:sd-xray-fifth-hotspot--preliminary-exam": {
+    "x": 73.3,
+    "y": 43.21,
+    "scale": 0.8
+  },
+  "xray-corridor-fifth:sd-xray-fifth-hotspot--orthodontics-right": {
+    "x": 54.15,
+    "y": 50.44,
+    "scale": 1
+  },
+  "xray-corridor-fifth:sd-xray-fifth-hotspot--orthodontics-center": {
+    "x": 33.8,
+    "y": 51.2,
+    "scale": 0.8
+  },
+  "xray-corridor-fifth:sd-xray-fifth-hotspot--orthodontics-left": {
+    "x": 21.58,
+    "y": 50.69,
+    "scale": 0.6
+  },
+  "khamis-lobby-side:sd-khamis-side-return": {
+    "x": 68.23,
+    "y": 59.88,
+    "scale": 1.2
+  },
+  "left-lobby:sd-left-lobby-forward": {
+    "x": 54.74,
+    "y": 64.47,
+    "scale": 1.2,
+    "angle": 89,
+    "tilt": 74,
+    "depth": 0.77
+  },
+  "left-lobby:sd-left-lobby-hotspot--administration": {
+    "x": 32.2,
+    "y": 47.34,
+    "scale": 0.8,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "left-reception:sd-left-reception-hotspot--reception": {
+    "x": 49.02,
+    "y": 57.67,
+    "scale": 1.3,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "left-reception:sd-left-reception-forward": {
+    "x": 49.65,
+    "y": 76.05,
+    "scale": 1.5,
+    "angle": -90,
+    "tilt": 72,
+    "depth": 0.77
+  },
+  "reception-hall:sd-reception-hall-arrow--left": {
+    "x": 43.68,
+    "y": 56.5,
+    "scale": 1,
+    "angle": -88,
+    "tilt": 70,
+    "depth": 0.79
+  },
+  "reception-hall:sd-reception-hall-arrow--right": {
+    "x": 53.93,
+    "y": 56.56,
+    "scale": 1,
+    "angle": 90,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "reception-hall:sd-reception-hall-hotspot--clinic": {
+    "x": 61.22,
+    "y": 46.99,
+    "scale": 0.7,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "reception-hall:sd-reception-hall-hotspot--patient-relations": {
+    "x": 33.87,
+    "y": 51.29,
+    "scale": 0.9,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "reception-hall:sd-reception-hall-hotspot--lounge": {
+    "x": 11.08,
+    "y": 81.14,
+    "scale": 1.6,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "reception-hall:sd-reception-hall-hotspot--reception": {
+    "x": 75.94,
+    "y": 63.16,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  }
+}

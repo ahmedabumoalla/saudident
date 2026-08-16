@@ -3172,6 +3172,8 @@ video {
 }
 
 .sd-screen-presentation__blank {
+  --sd-conference-scale-x: 1;
+  --sd-conference-scale-y: 1;
   position: absolute;
   z-index: 50;
   inset: 0;
@@ -3179,78 +3181,99 @@ video {
   background: #07171d;
   opacity: 0;
   visibility: hidden;
+  container-type: size;
 }
 
 .sd-conference-scene {
   position: absolute;
   z-index: 0;
-  inset: -2%;
+  inset: 0;
+  background-image: var(--sd-conference-image);
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
+  background-color: #07171d;
   will-change: transform, filter, opacity;
 }
 
 .sd-conference-scene--hall {
-  background-image: url("/assets/conference/saudident-tour-start.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-tour-start.webp");
+}
+
+.sd-conference-scene--left-lobby {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-left-lobby.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--left-reception {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-left-reception.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--reception-hall {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-hall.webp");
+  opacity: 0;
+  visibility: hidden;
 }
 
 .sd-conference-scene--reception {
-  background-image: url("/assets/conference/saudident-reception.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--main-reception {
-  background-image: url("/assets/conference/saudident-main-reception.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-main-reception.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--clinic-corridor {
-  background-image: url("/assets/conference/saudident-clinic-corridor.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-clinic-corridor.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--prayer-corridor {
-  background-image: url("/assets/conference/saudident-prayer-corridor.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-prayer-corridor.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--xray-corridor {
-  background-image: url("/assets/conference/saudident-xray-corridor.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--xray-corridor-next {
-  background-image: url("/assets/conference/saudident-xray-corridor-next.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-next.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--xray-corridor-third {
-  background-image: url("/assets/conference/saudident-xray-corridor-third.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-third.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--xray-corridor-fourth {
-  background-image: url("/assets/conference/saudident-xray-corridor-fourth.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-fourth.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--xray-corridor-fifth {
-  background-image: url("/assets/conference/saudident-xray-corridor-fifth.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-fifth.webp");
   opacity: 0;
   visibility: hidden;
 }
 
 .sd-conference-scene--khamis-lobby-side {
-  background-image: url("/assets/conference/saudident-khamis-lobby-side.jpg");
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-khamis-lobby-side.webp");
   opacity: 0;
   visibility: hidden;
 }
@@ -3258,6 +3281,36 @@ video {
 .sd-screen-presentation__blank.is-reception .sd-conference-scene--hall {
   opacity: 0;
   visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-left-lobby .sd-conference-scene:not(.sd-conference-scene--left-lobby) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-left-lobby .sd-conference-scene--left-lobby {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-left-reception .sd-conference-scene:not(.sd-conference-scene--left-reception) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-left-reception .sd-conference-scene--left-reception {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-reception-hall .sd-conference-scene:not(.sd-conference-scene--reception-hall) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-reception-hall .sd-conference-scene--reception-hall {
+  opacity: 1;
+  visibility: visible;
 }
 
 .sd-screen-presentation__blank.is-reception .sd-conference-scene--reception {
@@ -3384,6 +3437,17 @@ video {
   pointer-events: none;
 }
 
+.sd-reception-scene-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-reception-scene-controls > button {
+  pointer-events: auto;
+}
+
 .sd-conference-floor-arrow {
   position: absolute;
   left: var(--arrow-x);
@@ -3466,6 +3530,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-conference-forward {
+  --arrow-angle: 0deg;
+  --arrow-tilt: 64deg;
+  --arrow-depth: 1;
   position: absolute;
   z-index: 5;
   left: 52.5%;
@@ -3482,7 +3549,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-conference-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(64deg) rotateZ(0deg) scaleY(1);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-conference-forward svg {
@@ -3863,6 +3930,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-main-reception-forward {
+  --arrow-angle: -30deg;
+  --arrow-tilt: 68deg;
+  --arrow-depth: 0.78;
   position: absolute;
   left: 59%;
   top: 56%;
@@ -3879,7 +3949,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-main-reception-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(68deg) rotateZ(-30deg) scaleY(0.78);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-main-reception-forward svg {
@@ -4047,6 +4117,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-clinic-corridor-forward {
+  --arrow-angle: -90deg;
+  --arrow-tilt: 68deg;
+  --arrow-depth: 0.78;
   position: absolute;
   z-index: 5;
   left: 48%;
@@ -4068,7 +4141,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-clinic-corridor-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(68deg) rotateZ(-90deg) scaleY(0.78);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-clinic-corridor-forward svg {
@@ -4119,6 +4192,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-prayer-corridor-forward {
+  --arrow-angle: 0deg;
+  --arrow-tilt: 68deg;
+  --arrow-depth: 0.78;
   position: absolute;
   z-index: 5;
   left: 45.5%;
@@ -4136,7 +4212,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-prayer-corridor-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(68deg) rotateZ(0deg) scaleY(0.78);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-xray-corridor-controls {
@@ -4171,6 +4247,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-corridor-forward {
+  --arrow-angle: 0deg;
+  --arrow-tilt: 68deg;
+  --arrow-depth: 0.78;
   position: absolute;
   z-index: 5;
   left: 49.5%;
@@ -4188,7 +4267,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-corridor-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(68deg) rotateZ(0deg) scaleY(0.78);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-xray-next-controls {
@@ -4223,6 +4302,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-next-forward {
+  --arrow-angle: -90deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
   position: absolute;
   z-index: 5;
   left: 39%;
@@ -4240,7 +4322,295 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-next-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(70deg) rotateZ(-90deg) scaleY(0.76);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
+}
+
+.sd-conference-image-coordinates > [data-layout-control] {
+  scale: var(--sd-layout-scale, 1);
+  transform-origin: center;
+}
+
+.sd-left-lobby-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-left-lobby-forward {
+  --arrow-x: 50%;
+  --arrow-y: 78%;
+  --arrow-size: 112px;
+  --arrow-angle: 0deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.78;
+  --arrow-opacity: 0.9;
+}
+
+.sd-left-lobby-hotspot--administration {
+  --corridor-x: 74%;
+  --corridor-y: 54%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-left-reception-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-left-reception-forward {
+  --arrow-x: 50%;
+  --arrow-y: 80%;
+  --arrow-size: 112px;
+  --arrow-angle: 0deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.78;
+  --arrow-opacity: 0.9;
+}
+
+.sd-left-reception-hotspot--reception {
+  --corridor-x: 53%;
+  --corridor-y: 61%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-hall-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-reception-hall-arrow--left {
+  --arrow-x: 42%;
+  --arrow-y: 82%;
+  --arrow-size: 112px;
+  --arrow-angle: -45deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.78;
+  --arrow-opacity: 0.9;
+}
+
+.sd-reception-hall-arrow--right {
+  --arrow-x: 64%;
+  --arrow-y: 82%;
+  --arrow-size: 112px;
+  --arrow-angle: 45deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.78;
+  --arrow-opacity: 0.9;
+}
+
+.sd-reception-hall-hotspot--reception {
+  --corridor-x: 76%;
+  --corridor-y: 59%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-hall-hotspot--patient-relations {
+  --corridor-x: 61%;
+  --corridor-y: 54%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-hall-hotspot--lounge {
+  --corridor-x: 25%;
+  --corridor-y: 70%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-hall-hotspot--clinic {
+  --corridor-x: 51%;
+  --corridor-y: 55%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-conference-image-coordinates > .is-layout-editable {
+  border-radius: 18px;
+  outline: 3px dashed rgba(255, 224, 90, 0.92);
+  outline-offset: 7px;
+  cursor: grab !important;
+  pointer-events: auto !important;
+  touch-action: none !important;
+}
+
+.sd-conference-image-coordinates > .is-layout-editable:active {
+  cursor: grabbing !important;
+}
+
+.sd-conference-image-coordinates > .is-layout-selected {
+  outline-color: #fff;
+  filter: drop-shadow(0 0 12px rgba(255, 222, 77, 0.95));
+}
+
+.sd-layout-editor {
+  position: absolute;
+  z-index: 40;
+  top: clamp(78px, 9vh, 104px);
+  left: clamp(10px, 1.6vw, 24px);
+  width: min(390px, calc(100% - 20px));
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 224, 103, 0.62);
+  border-radius: 18px;
+  background: rgba(4, 31, 35, 0.94);
+  color: #fff;
+  box-shadow: 0 16px 42px rgba(0, 13, 16, 0.44);
+  backdrop-filter: blur(16px);
+}
+
+.sd-layout-editor header,
+.sd-layout-editor header > div,
+.sd-layout-editor__selection {
+  display: grid;
+}
+
+.sd-layout-editor header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sd-layout-editor header > div {
+  gap: 0.08rem;
+}
+
+.sd-layout-editor strong {
+  font-size: 0.82rem;
+}
+
+.sd-layout-editor header span,
+.sd-layout-editor p {
+  margin: 0;
+  color: rgba(229, 255, 247, 0.76);
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.sd-layout-editor header span.is-saving {
+  color: #ffe16c;
+}
+
+.sd-layout-editor header span.is-error {
+  color: #ff9e9e;
+}
+
+.sd-layout-editor button {
+  min-height: 34px;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sd-layout-editor button.is-active {
+  border-color: rgba(255, 224, 103, 0.65);
+  background: rgba(255, 224, 103, 0.16);
+  color: #ffe16c;
+}
+
+.sd-layout-editor > p {
+  margin-top: 0.65rem;
+}
+
+.sd-layout-editor__selection {
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sd-layout-editor__name {
+  overflow: hidden;
+  color: rgba(241, 255, 251, 0.86);
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sd-layout-editor output {
+  color: #ffe16c;
+  font: 700 0.72rem/1.2 monospace;
+}
+
+.sd-layout-editor__scale,
+.sd-layout-editor__nudges {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.sd-layout-editor__arrow-controls {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid rgba(83, 216, 174, 0.2);
+  border-radius: 12px;
+  background: rgba(83, 216, 174, 0.06);
+}
+
+.sd-layout-editor__arrow-controls label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.2rem 0.6rem;
+  color: rgba(239, 255, 250, 0.84);
+  font-size: 0.66rem;
+}
+
+.sd-layout-editor__arrow-controls input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: #53d8ae;
+}
+
+.sd-layout-editor__arrow-controls output {
+  font-size: 0.66rem;
+}
+
+.sd-layout-editor__scale input {
+  flex: 1;
+  min-width: 80px;
+  accent-color: #53d8ae;
+}
+
+.sd-layout-editor__scale button,
+.sd-layout-editor__nudges button {
+  min-width: 34px;
+  padding-inline: 0.45rem;
+}
+
+.sd-layout-editor__nudges button:last-child {
+  margin-inline-start: auto;
+  padding-inline: 0.7rem;
+}
+
+@media (max-width: 640px) {
+  .sd-layout-editor {
+    top: 72px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    padding: 0.6rem;
+  }
 }
 
 .sd-xray-third-controls {
@@ -4275,6 +4645,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-third-forward {
+  --arrow-angle: 0deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
   position: absolute;
   z-index: 5;
   left: 49.62%;
@@ -4296,7 +4669,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-third-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(70deg) rotateZ(0deg) scaleY(0.76);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-xray-fourth-controls {
@@ -4315,6 +4688,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-fourth-forward {
+  --arrow-angle: 0deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
   position: absolute;
   z-index: 5;
   left: 49.58%;
@@ -4336,10 +4712,13 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-fourth-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(70deg) rotateZ(0deg) scaleY(0.76);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-xray-fourth-side-forward {
+  --arrow-angle: -90deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
   position: absolute;
   z-index: 5;
   left: 30.3%;
@@ -4361,7 +4740,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-xray-fourth-side-forward .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(70deg) rotateZ(-90deg) scaleY(0.76);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-xray-fifth-controls {
@@ -4419,6 +4798,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-khamis-side-return {
+  --arrow-angle: 90deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
   position: absolute;
   z-index: 5;
   left: 69.3%;
@@ -4440,7 +4822,84 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 }
 
 .sd-khamis-side-return .sd-conference-floor-arrow__projection {
-  transform: perspective(460px) rotateX(70deg) rotateZ(90deg) scaleY(0.76);
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
+}
+
+/* The image and controls share the exact player box, like one printed layer. */
+.sd-screen-presentation__blank > .sd-conference-image-coordinates {
+  inset: auto;
+  top: 0;
+  left: 0;
+  width: 1500px;
+  height: 1000px;
+  aspect-ratio: 3 / 2;
+  transform: scale(var(--sd-conference-scale-x), var(--sd-conference-scale-y));
+  transform-origin: top left;
+}
+
+.sd-screen-presentation__blank.is-scene-transitioning > .sd-conference-image-coordinates {
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .sd-conference-scene--hall {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-tour-start-1280.webp");
+  }
+
+  .sd-conference-scene--left-lobby {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-left-lobby-1280.webp");
+  }
+
+  .sd-conference-scene--left-reception {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-left-reception-1280.webp");
+  }
+
+  .sd-conference-scene--reception-hall {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-hall-1280.webp");
+  }
+
+  .sd-conference-scene--reception {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-1280.webp");
+  }
+
+  .sd-conference-scene--main-reception {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-main-reception-1280.webp");
+  }
+
+  .sd-conference-scene--clinic-corridor {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-clinic-corridor-1280.webp");
+  }
+
+  .sd-conference-scene--prayer-corridor {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-prayer-corridor-1280.webp");
+  }
+
+  .sd-conference-scene--xray-corridor {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-1280.webp");
+  }
+
+  .sd-conference-scene--xray-corridor-next {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-next-1280.webp");
+  }
+
+  .sd-conference-scene--xray-corridor-third {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-third-1280.webp");
+  }
+
+  .sd-conference-scene--xray-corridor-fourth {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-fourth-1280.webp");
+  }
+
+  .sd-conference-scene--xray-corridor-fifth {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-xray-corridor-fifth-1280.webp");
+  }
+
+  .sd-conference-scene--khamis-lobby-side {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-khamis-lobby-side-1280.webp");
+  }
 }
 
 .sd-main-feature {
@@ -4687,7 +5146,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   position: absolute;
   inset: 0;
   display: block;
-  transform: perspective(460px) rotateX(var(--arrow-tilt)) rotateZ(var(--arrow-angle)) scaleY(var(--arrow-depth));
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
   transform-origin: 50% 72%;
 }
 

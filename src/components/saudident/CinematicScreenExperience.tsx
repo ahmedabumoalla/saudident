@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Braces, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { Armchair, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { doctors, khamisLobbySideFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type KhamisLobbySideFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
+import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
+import { administrativeOfficeFeature, doctors, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
-type ConferenceScene = "hall" | "reception" | "main-reception" | "clinic-corridor" | "prayer-corridor" | "xray-corridor" | "xray-corridor-next" | "xray-corridor-third" | "xray-corridor-fourth" | "xray-corridor-fifth" | "khamis-lobby-side";
+
+type ConferenceScene = "hall" | "left-lobby" | "left-reception" | "reception-hall" | "reception" | "main-reception" | "clinic-corridor" | "prayer-corridor" | "xray-corridor" | "xray-corridor-next" | "xray-corridor-third" | "xray-corridor-fourth" | "xray-corridor-fifth" | "khamis-lobby-side";
 type MainSceneFeature =
   | "welcome"
   | "lounge"
@@ -22,12 +24,15 @@ type MainSceneFeature =
   | "central-radiology"
   | "xray-clinic"
   | "women-lounge"
+  | "administrative-office"
+  | "left-reception-desk"
   | "next-clinic-left"
   | "next-clinic-center"
   | "next-clinic-right"
   | XrayThirdFeatureId
   | XrayFourthFeatureId
   | XrayFifthFeatureId
+  | ReceptionHallFeatureId
   | KhamisLobbySideFeatureId;
 
 function hasPortrait(doctor: SaudiDentDoctor): doctor is SaudiDentDoctor & { image: string } {
@@ -50,6 +55,10 @@ function isXrayFifthFeature(feature: MainSceneFeature | null): feature is XrayFi
 
 function isKhamisLobbySideFeature(feature: MainSceneFeature | null): feature is KhamisLobbySideFeatureId {
   return feature !== null && feature in khamisLobbySideFeatures;
+}
+
+function isReceptionHallFeature(feature: MainSceneFeature | null): feature is ReceptionHallFeatureId {
+  return feature !== null && feature in receptionHallFeatures;
 }
 
 function FloorRouteGuide() {
@@ -80,6 +89,7 @@ export function CinematicScreenExperience() {
   const activeXrayFourthFeature = isXrayFourthFeature(mainSceneFeature) ? xrayFourthFeatures[mainSceneFeature] : null;
   const activeXrayFifthFeature = isXrayFifthFeature(mainSceneFeature) ? xrayFifthFeatures[mainSceneFeature] : null;
   const activeKhamisLobbySideFeature = isKhamisLobbySideFeature(mainSceneFeature) ? khamisLobbySideFeatures[mainSceneFeature] : null;
+  const activeReceptionHallFeature = isReceptionHallFeature(mainSceneFeature) ? receptionHallFeatures[mainSceneFeature] : null;
 
   const completeIntro = useCallback(() => {
     if (completedRef.current) return;
@@ -94,18 +104,18 @@ export function CinematicScreenExperience() {
     setOpeningComplete(true);
   }, []);
 
-  const openRightScene = useCallback(() => {
+  const openHallScene = useCallback((destination: "left-lobby" | "reception", direction: -1 | 1) => {
     if (sceneTransitioning || activeScene !== "hall") return;
 
     const root = rootRef.current;
     const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--hall");
-    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception");
+    const nextScene = root?.querySelector<HTMLElement>(`.sd-conference-scene--${destination}`);
     const arrows = root?.querySelector<HTMLElement>(".sd-conference-floor-arrows");
     const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
     if (!currentScene || !nextScene || !arrows || !lightSweep) return;
 
     const finish = () => {
-      setActiveScene("reception");
+      setActiveScene(destination);
       setSceneTransitioning(false);
     };
 
@@ -122,7 +132,7 @@ export function CinematicScreenExperience() {
     sceneTimelineRef.current?.kill();
     gsap.set(nextScene, {
       autoAlpha: 0,
-      xPercent: 6,
+      xPercent: 6 * direction,
       scale: 1.08,
       filter: "blur(12px)",
       transformOrigin: "50% 58%",
@@ -137,7 +147,7 @@ export function CinematicScreenExperience() {
     transition
       .to(arrows, { autoAlpha: 0, scale: 1.08, duration: 0.26, ease: "power2.in" }, 0)
       .to(currentScene, {
-        xPercent: -5,
+        xPercent: -5 * direction,
         scale: 1.12,
         filter: "blur(7px)",
         transformOrigin: "58% 64%",
@@ -145,8 +155,8 @@ export function CinematicScreenExperience() {
         ease: "power3.in",
       }, 0)
       .fromTo(lightSweep,
-        { autoAlpha: 0, xPercent: 75 },
-        { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" },
+        { autoAlpha: 0, xPercent: 75 * direction },
+        { autoAlpha: 0.72, xPercent: -75 * direction, duration: 0.92, ease: "power2.inOut" },
         0.28,
       )
       .to(nextScene, {
@@ -161,11 +171,20 @@ export function CinematicScreenExperience() {
       .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
   }, [activeScene, sceneTransitioning]);
 
+  const openRightScene = useCallback(() => {
+    openHallScene("reception", 1);
+  }, [openHallScene]);
+
+  const openLeftScene = useCallback(() => {
+    openHallScene("left-lobby", -1);
+  }, [openHallScene]);
+
   const returnToHall = useCallback(() => {
-    if (sceneTransitioning || activeScene !== "reception") return;
+    if (sceneTransitioning || (activeScene !== "reception" && activeScene !== "left-lobby")) return;
 
     const root = rootRef.current;
-    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception");
+    const direction = activeScene === "reception" ? 1 : -1;
+    const currentScene = root?.querySelector<HTMLElement>(`.sd-conference-scene--${activeScene}`);
     const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--hall");
     const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
     const backButton = root?.querySelector<HTMLElement>(".sd-conference-back");
@@ -188,7 +207,7 @@ export function CinematicScreenExperience() {
     sceneTimelineRef.current?.kill();
     gsap.set(previousScene, {
       autoAlpha: 0,
-      xPercent: -6,
+      xPercent: -6 * direction,
       scale: 1.08,
       filter: "blur(12px)",
       transformOrigin: "50% 58%",
@@ -203,7 +222,7 @@ export function CinematicScreenExperience() {
     transition
       .to(backButton, { autoAlpha: 0, x: 12, duration: 0.22, ease: "power2.in" }, 0)
       .to(currentScene, {
-        xPercent: 5,
+        xPercent: 5 * direction,
         scale: 1.12,
         filter: "blur(7px)",
         transformOrigin: "42% 64%",
@@ -211,8 +230,8 @@ export function CinematicScreenExperience() {
         ease: "power3.in",
       }, 0)
       .fromTo(lightSweep,
-        { autoAlpha: 0, xPercent: -75 },
-        { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" },
+        { autoAlpha: 0, xPercent: -75 * direction },
+        { autoAlpha: 0.72, xPercent: 75 * direction, duration: 0.92, ease: "power2.inOut" },
         0.28,
       )
       .to(previousScene, {
@@ -223,6 +242,162 @@ export function CinematicScreenExperience() {
         duration: 1.28,
         ease: "power3.out",
       }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openLeftReception = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "left-lobby") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-lobby");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-reception");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-left-lobby-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("left-reception");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnToLeftLobby = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "left-reception") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-reception");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-lobby");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-left-reception-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("left-lobby");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openReceptionHall = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "left-reception") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-reception");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-left-reception-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-hall");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnToLeftReception = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-hall") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--left-reception");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-hall-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("left-reception");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
       .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
       .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
   }, [activeScene, sceneTransitioning]);
@@ -1411,6 +1586,34 @@ export function CinematicScreenExperience() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [closeMainSceneFeature, mainSceneFeature]);
 
+  useEffect(() => {
+    const player = rootRef.current?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
+    if (!player) return;
+
+    let frame = 0;
+    const applyPlayerScale = (width: number, height: number) => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        player.style.setProperty("--sd-conference-scale-x", (width / 1500).toFixed(6));
+        player.style.setProperty("--sd-conference-scale-y", (height / 1000).toFixed(6));
+      });
+    };
+
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      applyPlayerScale(entry.contentRect.width, entry.contentRect.height);
+    });
+    observer.observe(player);
+    applyPlayerScale(player.clientWidth, player.clientHeight);
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(frame);
+      player.style.removeProperty("--sd-conference-scale-x");
+      player.style.removeProperty("--sd-conference-scale-y");
+    };
+  }, []);
+
   useGSAP(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -1543,6 +1746,9 @@ export function CinematicScreenExperience() {
         aria-label="جولة داخل سعودي دنت"
       >
         <div className="sd-conference-scene sd-conference-scene--hall" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--left-lobby" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--left-reception" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--reception-hall" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--reception" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--main-reception" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--clinic-corridor" aria-hidden="true" />
@@ -1556,7 +1762,7 @@ export function CinematicScreenExperience() {
         <div className="sd-conference-scene-transition" aria-hidden="true" />
 
         {activeScene === "hall" && (
-        <div className="sd-conference-floor-arrows" aria-label="اتجاهات الجولة">
+        <div className="sd-conference-floor-arrows sd-conference-image-coordinates" aria-label="اتجاهات الجولة">
           <button
             type="button"
             className="sd-conference-floor-arrow sd-conference-floor-arrow--far"
@@ -1568,20 +1774,30 @@ export function CinematicScreenExperience() {
             <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
           </button>
 
-          <span className="sd-conference-floor-arrow sd-conference-floor-arrow--near" aria-hidden="true">
+          <button
+            type="button"
+            className="sd-conference-floor-arrow sd-conference-floor-arrow--near"
+            onClick={openLeftScene}
+            disabled={sceneTransitioning}
+            aria-label="الانتقال إلى الردهة اليسرى"
+          >
             <FloorRouteGuide />
-          </span>
+          </button>
         </div>
         )}
 
-        {(activeScene === "reception" || activeScene === "main-reception" || activeScene === "clinic-corridor" || activeScene === "prayer-corridor" || activeScene === "xray-corridor" || activeScene === "xray-corridor-next" || activeScene === "xray-corridor-third" || activeScene === "xray-corridor-fourth" || activeScene === "xray-corridor-fifth" || activeScene === "khamis-lobby-side") && (
+        {(activeScene === "left-lobby" || activeScene === "left-reception" || activeScene === "reception-hall" || activeScene === "reception" || activeScene === "main-reception" || activeScene === "clinic-corridor" || activeScene === "prayer-corridor" || activeScene === "xray-corridor" || activeScene === "xray-corridor-next" || activeScene === "xray-corridor-third" || activeScene === "xray-corridor-fourth" || activeScene === "xray-corridor-fifth" || activeScene === "khamis-lobby-side") && (
           <button
             key={`conference-back-${activeScene}`}
             type="button"
             className="sd-conference-back"
             onClick={
-              activeScene === "reception"
-                ? returnToHall
+              activeScene === "reception-hall"
+                ? returnToLeftReception
+                : activeScene === "left-reception"
+                  ? returnToLeftLobby
+                : activeScene === "left-lobby" || activeScene === "reception"
+                  ? returnToHall
                 : activeScene === "main-reception"
                   ? returnToReception
                   : activeScene === "clinic-corridor"
@@ -1610,8 +1826,93 @@ export function CinematicScreenExperience() {
           </button>
         )}
 
+        {activeScene === "left-lobby" && (
+          <div className="sd-left-lobby-controls sd-conference-image-coordinates" aria-label="اتجاه الردهة والمكتب الإداري">
+            <button
+              type="button"
+              className="sd-conference-floor-arrow sd-left-lobby-forward"
+              onClick={openLeftReception}
+              disabled={sceneTransitioning}
+              aria-label="الانتقال إلى الاستقبال"
+            >
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
+            </button>
+
+            <button
+              type="button"
+              className="sd-corridor-hotspot sd-left-lobby-hotspot--administration"
+              onClick={() => setMainSceneFeature("administrative-office")}
+              aria-label={administrativeOfficeFeature.ariaLabel}
+            >
+              <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+              <span className="sd-corridor-hotspot__icon"><Building2 aria-hidden="true" /></span>
+              <strong>{administrativeOfficeFeature.shortLabel}</strong>
+            </button>
+          </div>
+        )}
+
+        {activeScene === "left-reception" && (
+          <div className="sd-left-reception-controls sd-conference-image-coordinates" aria-label="سهم الاتجاه ونقطة الاستقبال">
+            <button
+              type="button"
+              className="sd-conference-floor-arrow sd-left-reception-forward"
+              onClick={openReceptionHall}
+              disabled={sceneTransitioning}
+              aria-label="الانتقال إلى صالة الاستقبال"
+            >
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
+            </button>
+
+            <button
+              type="button"
+              className="sd-corridor-hotspot sd-left-reception-hotspot--reception"
+              onClick={() => setMainSceneFeature("left-reception-desk")}
+              aria-label={leftReceptionFeature.ariaLabel}
+            >
+              <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+              <span className="sd-corridor-hotspot__icon"><CalendarCheck2 aria-hidden="true" /></span>
+              <strong>{leftReceptionFeature.shortLabel}</strong>
+            </button>
+          </div>
+        )}
+
+        {activeScene === "reception-hall" && (
+          <div className="sd-reception-hall-controls sd-conference-image-coordinates" aria-label="اتجاهات ومرافق صالة الاستقبال">
+            <span className="sd-conference-floor-arrow sd-reception-hall-arrow--left" aria-label="سهم الاتجاه الأيسر">
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
+            </span>
+
+            <span className="sd-conference-floor-arrow sd-reception-hall-arrow--right" aria-label="سهم الاتجاه الأيمن">
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
+            </span>
+
+            {(Object.entries(receptionHallFeatures) as [ReceptionHallFeatureId, (typeof receptionHallFeatures)[ReceptionHallFeatureId]][]).map(([featureId, feature]) => (
+              <button
+                key={featureId}
+                type="button"
+                className={`sd-corridor-hotspot sd-reception-hall-hotspot--${feature.icon}`}
+                onClick={() => setMainSceneFeature(featureId)}
+                aria-label={feature.ariaLabel}
+              >
+                <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+                <span className="sd-corridor-hotspot__icon">
+                  {feature.icon === "reception" && <CalendarCheck2 aria-hidden="true" />}
+                  {feature.icon === "patient-relations" && <HeartHandshake aria-hidden="true" />}
+                  {feature.icon === "lounge" && <Armchair aria-hidden="true" />}
+                  {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
+                </span>
+                <strong>{feature.shortLabel}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+
         {activeScene === "reception" && (
-          <>
+          <div className="sd-reception-scene-controls sd-conference-image-coordinates">
             <button
               type="button"
               className="sd-patient-relations-hotspot"
@@ -1635,11 +1936,11 @@ export function CinematicScreenExperience() {
               <FloorRouteGuide />
               <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
-          </>
+          </div>
         )}
 
         {activeScene === "main-reception" && (
-          <div className="sd-main-scene-controls" aria-label="نقاط المشهد التفاعلية">
+          <div className="sd-main-scene-controls sd-conference-image-coordinates" aria-label="نقاط المشهد التفاعلية">
             <button
               type="button"
               className="sd-main-scene-hotspot sd-main-scene-hotspot--welcome"
@@ -1693,7 +1994,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "clinic-corridor" && (
-          <div className="sd-corridor-controls" aria-label="نقاط ممر العيادات التفاعلية">
+          <div className="sd-corridor-controls sd-conference-image-coordinates" aria-label="نقاط ممر العيادات التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-corridor-hotspot--clinic-near"
@@ -1763,7 +2064,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "prayer-corridor" && (
-          <div className="sd-prayer-corridor-controls" aria-label="نقاط الممر التفاعلية">
+          <div className="sd-prayer-corridor-controls sd-conference-image-coordinates" aria-label="نقاط الممر التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-prayer-corridor-hotspot--prayer"
@@ -1800,7 +2101,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor" && (
-          <div className="sd-xray-corridor-controls" aria-label="نقاط ممر الأشعة التفاعلية">
+          <div className="sd-xray-corridor-controls sd-conference-image-coordinates" aria-label="نقاط ممر الأشعة التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-corridor-hotspot--radiology"
@@ -1848,7 +2149,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor-next" && (
-          <div className="sd-xray-next-controls" aria-label="نقاط عيادات الممر التفاعلية">
+          <div className="sd-xray-next-controls sd-conference-image-coordinates" aria-label="نقاط عيادات الممر التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-next-hotspot--left"
@@ -1896,7 +2197,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor-third" && (
-          <div className="sd-xray-third-controls" aria-label="نقاط الممر التفاعلية">
+          <div className="sd-xray-third-controls sd-conference-image-coordinates" aria-label="نقاط الممر التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-third-hotspot--lounge"
@@ -1944,7 +2245,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor-fourth" && (
-          <div className="sd-xray-fourth-controls" aria-label="نقاط المشهد التفاعلية">
+          <div className="sd-xray-fourth-controls sd-conference-image-coordinates" aria-label="نقاط المشهد التفاعلية">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-fourth-hotspot--call-center"
@@ -1981,7 +2282,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor-fifth" && (
-          <div className="sd-xray-fifth-controls" aria-label="نقاط عيادات التقويم والفحص الأولي">
+          <div className="sd-xray-fifth-controls sd-conference-image-coordinates" aria-label="نقاط عيادات التقويم والفحص الأولي">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-fifth-hotspot--orthodontics-left"
@@ -2029,7 +2330,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "khamis-lobby-side" && (
-          <div className="sd-khamis-side-controls" aria-label="نقطة الاستراحة والعودة إلى بداية القسم">
+          <div className="sd-khamis-side-controls sd-conference-image-coordinates" aria-label="نقطة الاستراحة والعودة إلى بداية القسم">
             <button
               type="button"
               className="sd-corridor-hotspot sd-khamis-side-hotspot--lounge"
@@ -2053,6 +2354,8 @@ export function CinematicScreenExperience() {
             </button>
           </div>
         )}
+
+        <ConferenceLayoutEditor rootRef={rootRef} activeScene={activeScene} />
 
         {mainSceneFeature && (
           <div
@@ -2088,7 +2391,7 @@ export function CinematicScreenExperience() {
               {mainSceneFeature === "lounge" && (
                 <div className="sd-main-feature__lounge-image">
                   <Image
-                    src="/assets/conference/saudident-lounge.jpg"
+                    src="/assets/branches/khamis-mushait/tour/saudident-lounge.webp"
                     alt="استراحة سعودي دنت"
                     fill
                     sizes="(max-width: 800px) 88vw, 680px"
@@ -2100,7 +2403,7 @@ export function CinematicScreenExperience() {
               {mainSceneFeature === "women-lounge" && (
                 <div className="sd-main-feature__women-lounge-image">
                   <Image
-                    src="/assets/conference/saudident-women-lounge.jpg"
+                    src="/assets/branches/khamis-mushait/tour/saudident-women-lounge.webp"
                     alt="استراحة النساء في سعودي دنت"
                     fill
                     sizes="(max-width: 800px) 88vw, 700px"
@@ -2113,7 +2416,7 @@ export function CinematicScreenExperience() {
                 <div className="sd-main-feature__sterilization-gallery" aria-label="صور قسم التعقيم في سعودي دنت">
                   <div>
                     <Image
-                      src="/assets/conference/saudident-sterilization-wide.jpg"
+                      src="/assets/branches/khamis-mushait/tour/saudident-sterilization-wide.webp"
                       alt="قسم التعقيم في سعودي دنت"
                       fill
                       sizes="(max-width: 800px) 84vw, 340px"
@@ -2122,7 +2425,7 @@ export function CinematicScreenExperience() {
                   </div>
                   <div>
                     <Image
-                      src="/assets/conference/saudident-sterilization-close.jpg"
+                      src="/assets/branches/khamis-mushait/tour/saudident-sterilization-close.webp"
                       alt="تجهيز الأدوات داخل قسم التعقيم"
                       fill
                       sizes="(max-width: 800px) 84vw, 340px"
@@ -2135,7 +2438,7 @@ export function CinematicScreenExperience() {
               {mainSceneFeature === "prayer-room" && (
                 <div className="sd-main-feature__prayer-image">
                   <Image
-                    src="/assets/conference/saudident-prayer-room.jpg"
+                    src="/assets/branches/khamis-mushait/tour/saudident-prayer-room.webp"
                     alt="مصلى سعودي دنت"
                     fill
                     sizes="(max-width: 800px) 88vw, 700px"
@@ -2158,6 +2461,8 @@ export function CinematicScreenExperience() {
                 {mainSceneFeature === "central-radiology" && <Radiation />}
                 {mainSceneFeature === "xray-clinic" && <Stethoscope />}
                 {mainSceneFeature === "women-lounge" && <Armchair />}
+                {mainSceneFeature === "administrative-office" && <Building2 />}
+                {mainSceneFeature === "left-reception-desk" && <CalendarCheck2 />}
                 {(mainSceneFeature === "next-clinic-left" ||
                   mainSceneFeature === "next-clinic-center" ||
                   mainSceneFeature === "next-clinic-right") && <Stethoscope />}
@@ -2167,6 +2472,10 @@ export function CinematicScreenExperience() {
                 {activeXrayFifthFeature?.icon === "orthodontics" && <Braces />}
                 {activeXrayFifthFeature?.icon === "exam" && <ClipboardCheck />}
                 {activeKhamisLobbySideFeature?.icon === "lounge" && <Armchair />}
+                {activeReceptionHallFeature?.icon === "reception" && <CalendarCheck2 />}
+                {activeReceptionHallFeature?.icon === "patient-relations" && <HeartHandshake />}
+                {activeReceptionHallFeature?.icon === "lounge" && <Armchair />}
+                {activeReceptionHallFeature?.icon === "clinic" && <Stethoscope />}
               </div>
 
               {mainSceneFeature === "welcome" && (
@@ -2181,6 +2490,30 @@ export function CinematicScreenExperience() {
                     <span>تخصصات متنوعة</span>
                     <span>اهتمام مستمر</span>
                   </div>
+                </>
+              )}
+
+              {mainSceneFeature === "administrative-office" && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{administrativeOfficeFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{administrativeOfficeFeature.title}</h2>
+                  <p className="sd-main-feature__message">{administrativeOfficeFeature.message}</p>
+                </>
+              )}
+
+              {mainSceneFeature === "left-reception-desk" && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{leftReceptionFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{leftReceptionFeature.title}</h2>
+                  <p className="sd-main-feature__message">{leftReceptionFeature.message}</p>
+                </>
+              )}
+
+              {activeReceptionHallFeature && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{activeReceptionHallFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{activeReceptionHallFeature.title}</h2>
+                  <p className="sd-main-feature__message">{activeReceptionHallFeature.message}</p>
                 </>
               )}
 

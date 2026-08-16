@@ -147,6 +147,59 @@ export const khamisLobbySideFeatures = {
 
 export type KhamisLobbySideFeatureId = keyof typeof khamisLobbySideFeatures;
 
+export const administrativeOfficeFeature = {
+  shortLabel: "المكتب الإداري",
+  ariaLabel: "فتح معلومات المكتب الإداري",
+  eyebrow: "المكتب الإداري",
+  title: "الإدارة والتنسيق داخل الفرع",
+  message: "مساحة المكتب الإداري في فرع خميس مشيط.",
+} as const;
+
+export const leftReceptionFeature = {
+  shortLabel: "الاستقبال",
+  ariaLabel: "فتح معلومات الاستقبال",
+  eyebrow: "الاستقبال",
+  title: "استقبال فرع خميس مشيط",
+  message: "منطقة الاستقبال في فرع خميس مشيط.",
+} as const;
+
+export const receptionHallFeatures = {
+  "reception-hall-reception": {
+    shortLabel: "الاستقبال",
+    ariaLabel: "فتح معلومات الاستقبال",
+    icon: "reception",
+    eyebrow: "الاستقبال",
+    title: "استقبال فرع خميس مشيط",
+    message: "منطقة الاستقبال في فرع خميس مشيط.",
+  },
+  "reception-hall-patient-relations": {
+    shortLabel: "علاقات المرضى",
+    ariaLabel: "فتح معلومات علاقات المرضى",
+    icon: "patient-relations",
+    eyebrow: "علاقات المرضى",
+    title: "نقطة علاقات المرضى",
+    message: "نقطة علاقات المرضى داخل فرع خميس مشيط.",
+  },
+  "reception-hall-lounge": {
+    shortLabel: "الاستراحة",
+    ariaLabel: "فتح معلومات الاستراحة",
+    icon: "lounge",
+    eyebrow: "الاستراحة",
+    title: "استراحة فرع خميس مشيط",
+    message: "منطقة الاستراحة داخل فرع خميس مشيط.",
+  },
+  "reception-hall-clinic": {
+    shortLabel: "العيادة",
+    ariaLabel: "فتح معلومات العيادة",
+    icon: "clinic",
+    eyebrow: "العيادة",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط.",
+  },
+} as const;
+
+export type ReceptionHallFeatureId = keyof typeof receptionHallFeatures;
+
 export const doctors: SaudiDentDoctor[] = [
   { id:"youssef-alqarni",name:"أ. د. يوسف عبدالله القرني",specialty:"استشاري جذور وأعصاب",image:"/media/doctors/youssef-alqarni.jpg",source:team,verifiedAt:VERIFIED_AT },
   { id:"saad-alqahtani",name:"أ.د. سعد محمد علي القحطاني",specialty:"استشاري زراعة وأمراض اللثة",image:"/media/doctors/saad-alqahtani.jpg",source:team,verifiedAt:VERIFIED_AT },
