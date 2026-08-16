@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { Armchair, Bone, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
-import { administrativeOfficeFeature, doctors, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
+import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
 
-type ConferenceScene = "hall" | "left-lobby" | "left-reception" | "reception-hall" | "reception" | "main-reception" | "clinic-corridor" | "prayer-corridor" | "xray-corridor" | "xray-corridor-next" | "xray-corridor-third" | "xray-corridor-fourth" | "xray-corridor-fifth" | "khamis-lobby-side";
+type ConferenceScene = "hall" | "left-lobby" | "left-reception" | "reception-hall" | "implant-corridor" | "implant-unit-lobby" | "reception-right-corridor" | "reception-right-lobby" | "reception" | "main-reception" | "clinic-corridor" | "prayer-corridor" | "xray-corridor" | "xray-corridor-next" | "xray-corridor-third" | "xray-corridor-fourth" | "xray-corridor-fifth" | "khamis-lobby-side";
+type BranchView = "choice" | "khamis" | "abha";
 type MainSceneFeature =
   | "welcome"
   | "lounge"
@@ -33,6 +34,10 @@ type MainSceneFeature =
   | XrayFourthFeatureId
   | XrayFifthFeatureId
   | ReceptionHallFeatureId
+  | ImplantCorridorFeatureId
+  | ImplantUnitLobbyFeatureId
+  | ReceptionRightCorridorFeatureId
+  | ReceptionRightLobbyFeatureId
   | KhamisLobbySideFeatureId;
 
 function hasPortrait(doctor: SaudiDentDoctor): doctor is SaudiDentDoctor & { image: string } {
@@ -61,6 +66,22 @@ function isReceptionHallFeature(feature: MainSceneFeature | null): feature is Re
   return feature !== null && feature in receptionHallFeatures;
 }
 
+function isImplantCorridorFeature(feature: MainSceneFeature | null): feature is ImplantCorridorFeatureId {
+  return feature !== null && feature in implantCorridorFeatures;
+}
+
+function isImplantUnitLobbyFeature(feature: MainSceneFeature | null): feature is ImplantUnitLobbyFeatureId {
+  return feature !== null && feature in implantUnitLobbyFeatures;
+}
+
+function isReceptionRightCorridorFeature(feature: MainSceneFeature | null): feature is ReceptionRightCorridorFeatureId {
+  return feature !== null && feature in receptionRightCorridorFeatures;
+}
+
+function isReceptionRightLobbyFeature(feature: MainSceneFeature | null): feature is ReceptionRightLobbyFeatureId {
+  return feature !== null && feature in receptionRightLobbyFeatures;
+}
+
 function FloorRouteGuide() {
   return (
     <span className="sd-conference-floor-arrow__projection" aria-hidden="true">
@@ -81,6 +102,7 @@ export function CinematicScreenExperience() {
   const mainFeatureDialogRef = useRef<HTMLDivElement>(null);
   const completedRef = useRef(false);
   const [openingComplete, setOpeningComplete] = useState(false);
+  const [branchView, setBranchView] = useState<BranchView>("choice");
   const [activeScene, setActiveScene] = useState<ConferenceScene>("hall");
   const [sceneTransitioning, setSceneTransitioning] = useState(false);
   const [patientRelationsOpen, setPatientRelationsOpen] = useState(false);
@@ -90,6 +112,23 @@ export function CinematicScreenExperience() {
   const activeXrayFifthFeature = isXrayFifthFeature(mainSceneFeature) ? xrayFifthFeatures[mainSceneFeature] : null;
   const activeKhamisLobbySideFeature = isKhamisLobbySideFeature(mainSceneFeature) ? khamisLobbySideFeatures[mainSceneFeature] : null;
   const activeReceptionHallFeature = isReceptionHallFeature(mainSceneFeature) ? receptionHallFeatures[mainSceneFeature] : null;
+  const activeImplantCorridorFeature = isImplantCorridorFeature(mainSceneFeature) ? implantCorridorFeatures[mainSceneFeature] : null;
+  const activeImplantUnitLobbyFeature = isImplantUnitLobbyFeature(mainSceneFeature) ? implantUnitLobbyFeatures[mainSceneFeature] : null;
+  const activeReceptionRightCorridorFeature = isReceptionRightCorridorFeature(mainSceneFeature) ? receptionRightCorridorFeatures[mainSceneFeature] : null;
+  const activeReceptionRightLobbyFeature = isReceptionRightLobbyFeature(mainSceneFeature) ? receptionRightLobbyFeatures[mainSceneFeature] : null;
+
+  const showBranchChoice = useCallback(() => {
+    const tour = rootRef.current?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
+    if (tour) gsap.set(tour, { autoAlpha: 0 });
+    setBranchView("choice");
+  }, []);
+
+  const openKhamisBranch = useCallback(() => {
+    const tour = rootRef.current?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
+    if (tour) gsap.set(tour, { autoAlpha: 1 });
+    setActiveScene("hall");
+    setBranchView("khamis");
+  }, []);
 
   const completeIntro = useCallback(() => {
     if (completedRef.current) return;
@@ -97,7 +136,7 @@ export function CinematicScreenExperience() {
 
     const root = rootRef.current;
     if (root) {
-      gsap.set(root.querySelector(".sd-screen-presentation__blank"), { autoAlpha: 1 });
+      gsap.set(root.querySelector(".sd-screen-presentation__blank"), { autoAlpha: 0 });
       gsap.set(root.querySelector(".sd-screen-opening"), { autoAlpha: 0, visibility: "hidden" });
     }
 
@@ -377,6 +416,318 @@ export function CinematicScreenExperience() {
 
     const finish = () => {
       setActiveScene("left-reception");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openReceptionRightCorridor = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-hall") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-corridor");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-hall-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-right-corridor");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnFromReceptionRightCorridor = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-right-corridor") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-corridor");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-right-corridor-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-hall");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openReceptionRightLobby = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-right-corridor") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-corridor");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-lobby");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-right-corridor-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-right-lobby");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnToReceptionRightCorridor = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-right-lobby") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-lobby");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-right-corridor");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-right-lobby-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-right-corridor");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openImplantCorridor = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "reception-hall") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-corridor");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-reception-hall-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("implant-corridor");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnToReceptionHall = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "implant-corridor") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-corridor");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--reception-hall");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-implant-corridor-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("reception-hall");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(previousScene, { autoAlpha: 0, xPercent: 4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: -4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: 75 }, { autoAlpha: 0.72, xPercent: -75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(previousScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const openImplantUnitLobby = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "implant-corridor") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-corridor");
+    const nextScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-unit-lobby");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-implant-corridor-controls > *"))
+      : [];
+    if (!currentScene || !nextScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("implant-unit-lobby");
+      setSceneTransitioning(false);
+    };
+
+    setSceneTransitioning(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(currentScene, { autoAlpha: 0 });
+      gsap.set(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)" });
+      finish();
+      return;
+    }
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, { autoAlpha: 0, xPercent: -4, scale: 1.1, filter: "blur(12px)", transformOrigin: "50% 68%" });
+    const transition = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish });
+    sceneTimelineRef.current = transition;
+
+    transition
+      .to(controls, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: "power2.in" }, 0)
+      .to(currentScene, { xPercent: 4, scale: 1.14, filter: "blur(7px)", transformOrigin: "50% 68%", duration: 1.05, ease: "power3.in" }, 0)
+      .fromTo(lightSweep, { autoAlpha: 0, xPercent: -75 }, { autoAlpha: 0.72, xPercent: 75, duration: 0.92, ease: "power2.inOut" }, 0.28)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px)", duration: 1.28, ease: "power3.out" }, 0.5)
+      .to(currentScene, { autoAlpha: 0, duration: 0.68, ease: "power2.inOut" }, 0.5)
+      .to(lightSweep, { autoAlpha: 0, duration: 0.48, ease: "power2.out" }, 0.88);
+  }, [activeScene, sceneTransitioning]);
+
+  const returnToImplantCorridor = useCallback(() => {
+    if (sceneTransitioning || activeScene !== "implant-unit-lobby") return;
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-unit-lobby");
+    const previousScene = root?.querySelector<HTMLElement>(".sd-conference-scene--implant-corridor");
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const controls = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-back, .sd-implant-unit-lobby-controls > *"))
+      : [];
+    if (!currentScene || !previousScene || !lightSweep) return;
+
+    const finish = () => {
+      setActiveScene("implant-corridor");
       setSceneTransitioning(false);
     };
 
@@ -1632,7 +1983,7 @@ export function CinematicScreenExperience() {
     const applyFinalState = () => {
       gsap.set([firstCopy, secondCopy, finalCopy, portraits, doctorInfo], { autoAlpha: 0 });
       gsap.set(opening, { autoAlpha: 0, visibility: "hidden" });
-      gsap.set(blank, { autoAlpha: 1 });
+      gsap.set(blank, { autoAlpha: 0 });
     };
 
     const finish = () => {
@@ -1703,8 +2054,7 @@ export function CinematicScreenExperience() {
       .to(portraits[2], { x: 34, y: 8, scale: 0.96, autoAlpha: 0, duration: 1.15 }, 7.55)
       .to(doctorInfo, { autoAlpha: 0, y: 8, duration: 0.72 }, 7.55)
       .to(finalCopy, { autoAlpha: 0, y: -12, duration: 0.78 }, 7.55)
-      .to(blank, { autoAlpha: 1, duration: 1.1, ease: "power2.inOut" }, 7.55)
-      .to({}, { duration: 0.15 }, 8.65);
+      .to({}, { duration: 1.25 }, 7.55);
 
     if (window.matchMedia("(max-width: 767px)").matches) timeline.timeScale(1.38);
 
@@ -1744,11 +2094,17 @@ export function CinematicScreenExperience() {
       <main
         className={`sd-screen-presentation__blank is-${activeScene}${sceneTransitioning ? " is-scene-transitioning" : ""}`}
         aria-label="جولة داخل سعودي دنت"
+        aria-hidden={branchView !== "khamis"}
+        inert={branchView !== "khamis"}
       >
         <div className="sd-conference-scene sd-conference-scene--hall" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--left-lobby" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--left-reception" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--reception-hall" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--implant-corridor" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--implant-unit-lobby" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--reception-right-corridor" aria-hidden="true" />
+        <div className="sd-conference-scene sd-conference-scene--reception-right-lobby" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--reception" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--main-reception" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--clinic-corridor" aria-hidden="true" />
@@ -1760,6 +2116,19 @@ export function CinematicScreenExperience() {
         <div className="sd-conference-scene sd-conference-scene--xray-corridor-fifth" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--khamis-lobby-side" aria-hidden="true" />
         <div className="sd-conference-scene-transition" aria-hidden="true" />
+
+        {branchView === "khamis" && activeScene === "hall" && (
+          <button
+            type="button"
+            className="sd-branch-choice-return"
+            onClick={showBranchChoice}
+            disabled={sceneTransitioning}
+            aria-label="العودة إلى اختيار الفرع"
+          >
+            <Building2 aria-hidden="true" />
+            <span>اختيار الفرع</span>
+          </button>
+        )}
 
         {activeScene === "hall" && (
         <div className="sd-conference-floor-arrows sd-conference-image-coordinates" aria-label="اتجاهات الجولة">
@@ -1786,14 +2155,22 @@ export function CinematicScreenExperience() {
         </div>
         )}
 
-        {(activeScene === "left-lobby" || activeScene === "left-reception" || activeScene === "reception-hall" || activeScene === "reception" || activeScene === "main-reception" || activeScene === "clinic-corridor" || activeScene === "prayer-corridor" || activeScene === "xray-corridor" || activeScene === "xray-corridor-next" || activeScene === "xray-corridor-third" || activeScene === "xray-corridor-fourth" || activeScene === "xray-corridor-fifth" || activeScene === "khamis-lobby-side") && (
+        {(activeScene === "left-lobby" || activeScene === "left-reception" || activeScene === "reception-hall" || activeScene === "implant-corridor" || activeScene === "implant-unit-lobby" || activeScene === "reception-right-corridor" || activeScene === "reception-right-lobby" || activeScene === "reception" || activeScene === "main-reception" || activeScene === "clinic-corridor" || activeScene === "prayer-corridor" || activeScene === "xray-corridor" || activeScene === "xray-corridor-next" || activeScene === "xray-corridor-third" || activeScene === "xray-corridor-fourth" || activeScene === "xray-corridor-fifth" || activeScene === "khamis-lobby-side") && (
           <button
             key={`conference-back-${activeScene}`}
             type="button"
             className="sd-conference-back"
             onClick={
-              activeScene === "reception-hall"
-                ? returnToLeftReception
+              activeScene === "reception-right-lobby"
+                ? returnToReceptionRightCorridor
+                : activeScene === "reception-right-corridor"
+                  ? returnFromReceptionRightCorridor
+                : activeScene === "implant-unit-lobby"
+                  ? returnToImplantCorridor
+                : activeScene === "implant-corridor"
+                  ? returnToReceptionHall
+                : activeScene === "reception-hall"
+                  ? returnToLeftReception
                 : activeScene === "left-reception"
                   ? returnToLeftLobby
                 : activeScene === "left-lobby" || activeScene === "reception"
@@ -1880,15 +2257,27 @@ export function CinematicScreenExperience() {
 
         {activeScene === "reception-hall" && (
           <div className="sd-reception-hall-controls sd-conference-image-coordinates" aria-label="اتجاهات ومرافق صالة الاستقبال">
-            <span className="sd-conference-floor-arrow sd-reception-hall-arrow--left" aria-label="سهم الاتجاه الأيسر">
+            <button
+              type="button"
+              className="sd-conference-floor-arrow sd-reception-hall-arrow--left"
+              onClick={openImplantCorridor}
+              disabled={sceneTransitioning}
+              aria-label="الانتقال إلى ممر وحدة زراعة الأسنان"
+            >
               <FloorRouteGuide />
               <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
-            </span>
+            </button>
 
-            <span className="sd-conference-floor-arrow sd-reception-hall-arrow--right" aria-label="سهم الاتجاه الأيمن">
+            <button
+              type="button"
+              className="sd-conference-floor-arrow sd-reception-hall-arrow--right"
+              onClick={openReceptionRightCorridor}
+              disabled={sceneTransitioning}
+              aria-label="الانتقال إلى الممر الأيمن"
+            >
               <FloorRouteGuide />
               <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
-            </span>
+            </button>
 
             {(Object.entries(receptionHallFeatures) as [ReceptionHallFeatureId, (typeof receptionHallFeatures)[ReceptionHallFeatureId]][]).map(([featureId, feature]) => (
               <button
@@ -1904,6 +2293,101 @@ export function CinematicScreenExperience() {
                   {feature.icon === "patient-relations" && <HeartHandshake aria-hidden="true" />}
                   {feature.icon === "lounge" && <Armchair aria-hidden="true" />}
                   {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
+                </span>
+                <strong>{feature.shortLabel}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeScene === "implant-corridor" && (
+          <div className="sd-implant-corridor-controls sd-conference-image-coordinates" aria-label="مرافق ممر وحدة زراعة الأسنان">
+            {(Object.entries(implantCorridorFeatures) as [ImplantCorridorFeatureId, (typeof implantCorridorFeatures)[ImplantCorridorFeatureId]][]).map(([featureId, feature]) => (
+              <button
+                key={featureId}
+                type="button"
+                className={`sd-corridor-hotspot sd-implant-corridor-hotspot--${feature.icon}`}
+                onClick={feature.icon === "implant" ? openImplantUnitLobby : () => setMainSceneFeature(featureId)}
+                disabled={sceneTransitioning}
+                aria-label={feature.icon === "implant" ? "الانتقال إلى وحدة زراعة الأسنان" : feature.ariaLabel}
+              >
+                <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+                <span className="sd-corridor-hotspot__icon">
+                  {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
+                  {feature.icon === "implant" && <Bone aria-hidden="true" />}
+                </span>
+                <strong>{feature.shortLabel}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeScene === "implant-unit-lobby" && (
+          <div className="sd-implant-unit-lobby-controls sd-conference-image-coordinates" aria-label="مرافق وحدة زراعة الأسنان">
+            {(Object.entries(implantUnitLobbyFeatures) as [ImplantUnitLobbyFeatureId, (typeof implantUnitLobbyFeatures)[ImplantUnitLobbyFeatureId]][]).map(([featureId, feature]) => (
+              <button
+                key={featureId}
+                type="button"
+                className={`sd-corridor-hotspot sd-implant-unit-lobby-hotspot--${featureId.replace("implant-unit-", "")}`}
+                onClick={() => setMainSceneFeature(featureId)}
+                aria-label={feature.ariaLabel}
+              >
+                <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+                <span className="sd-corridor-hotspot__icon">
+                  {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
+                  {feature.icon === "reception" && <CalendarCheck2 aria-hidden="true" />}
+                  {feature.icon === "lounge" && <Armchair aria-hidden="true" />}
+                </span>
+                <strong>{feature.shortLabel}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeScene === "reception-right-corridor" && (
+          <div className="sd-reception-right-corridor-controls sd-conference-image-coordinates" aria-label="اتجاه وعيادات الممر الأيمن">
+            <button
+              type="button"
+              className="sd-conference-floor-arrow sd-reception-right-corridor-forward"
+              onClick={openReceptionRightLobby}
+              disabled={sceneTransitioning}
+              aria-label="الانتقال إلى صالة الممر"
+            >
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
+            </button>
+
+            {(Object.entries(receptionRightCorridorFeatures) as [ReceptionRightCorridorFeatureId, (typeof receptionRightCorridorFeatures)[ReceptionRightCorridorFeatureId]][]).map(([featureId, feature]) => (
+              <button
+                key={featureId}
+                type="button"
+                className={`sd-corridor-hotspot sd-reception-right-corridor-hotspot--${featureId.replace("reception-right-", "")}`}
+                onClick={() => setMainSceneFeature(featureId)}
+                aria-label={feature.ariaLabel}
+              >
+                <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+                <span className="sd-corridor-hotspot__icon"><Stethoscope aria-hidden="true" /></span>
+                <strong>{feature.shortLabel}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeScene === "reception-right-lobby" && (
+          <div className="sd-reception-right-lobby-controls sd-conference-image-coordinates" aria-label="مرافق صالة الممر">
+            {(Object.entries(receptionRightLobbyFeatures) as [ReceptionRightLobbyFeatureId, (typeof receptionRightLobbyFeatures)[ReceptionRightLobbyFeatureId]][]).map(([featureId, feature]) => (
+              <button
+                key={featureId}
+                type="button"
+                className={`sd-corridor-hotspot sd-reception-right-lobby-hotspot--${featureId.replace("reception-right-lobby-", "")}`}
+                onClick={() => setMainSceneFeature(featureId)}
+                aria-label={feature.ariaLabel}
+              >
+                <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+                <span className="sd-corridor-hotspot__icon">
+                  {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
+                  {feature.icon === "lounge" && <Armchair aria-hidden="true" />}
+                  {feature.icon === "reception" && <CalendarCheck2 aria-hidden="true" />}
                 </span>
                 <strong>{feature.shortLabel}</strong>
               </button>
@@ -2355,7 +2839,7 @@ export function CinematicScreenExperience() {
           </div>
         )}
 
-        <ConferenceLayoutEditor rootRef={rootRef} activeScene={activeScene} />
+        {branchView === "khamis" && <ConferenceLayoutEditor rootRef={rootRef} activeScene={activeScene} />}
 
         {mainSceneFeature && (
           <div
@@ -2387,6 +2871,18 @@ export function CinematicScreenExperience() {
                 height={1139}
                 unoptimized
               />
+
+              {mainSceneFeature === "reception-right-lobby-reception" && (
+                <div className="sd-main-feature__reception-image">
+                  <Image
+                    src={receptionRightLobbyFeatures["reception-right-lobby-reception"].image}
+                    alt={receptionRightLobbyFeatures["reception-right-lobby-reception"].imageAlt}
+                    fill
+                    sizes="(max-width: 800px) 88vw, 700px"
+                    unoptimized
+                  />
+                </div>
+              )}
 
               {mainSceneFeature === "lounge" && (
                 <div className="sd-main-feature__lounge-image">
@@ -2476,6 +2972,15 @@ export function CinematicScreenExperience() {
                 {activeReceptionHallFeature?.icon === "patient-relations" && <HeartHandshake />}
                 {activeReceptionHallFeature?.icon === "lounge" && <Armchair />}
                 {activeReceptionHallFeature?.icon === "clinic" && <Stethoscope />}
+                {activeImplantCorridorFeature?.icon === "clinic" && <Stethoscope />}
+                {activeImplantCorridorFeature?.icon === "implant" && <Bone />}
+                {activeImplantUnitLobbyFeature?.icon === "clinic" && <Stethoscope />}
+                {activeImplantUnitLobbyFeature?.icon === "reception" && <CalendarCheck2 />}
+                {activeImplantUnitLobbyFeature?.icon === "lounge" && <Armchair />}
+                {activeReceptionRightCorridorFeature?.icon === "clinic" && <Stethoscope />}
+                {activeReceptionRightLobbyFeature?.icon === "clinic" && <Stethoscope />}
+                {activeReceptionRightLobbyFeature?.icon === "lounge" && <Armchair />}
+                {activeReceptionRightLobbyFeature?.icon === "reception" && <CalendarCheck2 />}
               </div>
 
               {mainSceneFeature === "welcome" && (
@@ -2514,6 +3019,38 @@ export function CinematicScreenExperience() {
                   <p className="sd-main-feature__eyebrow">{activeReceptionHallFeature.eyebrow}</p>
                   <h2 id="sd-main-feature-title">{activeReceptionHallFeature.title}</h2>
                   <p className="sd-main-feature__message">{activeReceptionHallFeature.message}</p>
+                </>
+              )}
+
+              {activeImplantCorridorFeature && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{activeImplantCorridorFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{activeImplantCorridorFeature.title}</h2>
+                  <p className="sd-main-feature__message">{activeImplantCorridorFeature.message}</p>
+                </>
+              )}
+
+              {activeImplantUnitLobbyFeature && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{activeImplantUnitLobbyFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{activeImplantUnitLobbyFeature.title}</h2>
+                  <p className="sd-main-feature__message">{activeImplantUnitLobbyFeature.message}</p>
+                </>
+              )}
+
+              {activeReceptionRightCorridorFeature && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{activeReceptionRightCorridorFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{activeReceptionRightCorridorFeature.title}</h2>
+                  <p className="sd-main-feature__message">{activeReceptionRightCorridorFeature.message}</p>
+                </>
+              )}
+
+              {activeReceptionRightLobbyFeature && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{activeReceptionRightLobbyFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{activeReceptionRightLobbyFeature.title}</h2>
+                  <p className="sd-main-feature__message">{activeReceptionRightLobbyFeature.message}</p>
                 </>
               )}
 
@@ -2748,6 +3285,57 @@ export function CinematicScreenExperience() {
           </div>
         )}
       </main>
+
+      {openingComplete && branchView === "choice" && (
+        <section className="sd-branch-choice" aria-labelledby="sd-branch-choice-title">
+          <div className="sd-branch-choice__panel">
+            <Image
+              className="sd-branch-choice__logo"
+              src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+              alt="سعودي دنت"
+              width={4096}
+              height={1139}
+              priority
+              unoptimized
+            />
+            <p>الجولة التفاعلية</p>
+            <h1 id="sd-branch-choice-title">اختر الفرع</h1>
+
+            <div className="sd-branch-choice__options">
+              <button
+                type="button"
+                className="sd-branch-choice__option is-khamis"
+                onClick={openKhamisBranch}
+              >
+                <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
+                <strong>فرع خميس مشيط</strong>
+                <small>ابدأ الجولة</small>
+              </button>
+
+              <button
+                type="button"
+                className="sd-branch-choice__option is-abha"
+                onClick={() => setBranchView("abha")}
+              >
+                <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
+                <strong>فرع أبها</strong>
+                <small>صفحة الفرع</small>
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {openingComplete && branchView === "abha" && (
+        <section className="sd-abha-placeholder" aria-label="فرع أبها">
+          <button type="button" onClick={showBranchChoice} aria-label="العودة إلى اختيار الفرع">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M14 6l6 6-6 6" />
+            </svg>
+            <span>اختيار الفرع</span>
+          </button>
+        </section>
+      )}
 
       {!openingComplete && (
         <section className="sd-screen-opening" aria-label="افتتاحية سعودي دنت">

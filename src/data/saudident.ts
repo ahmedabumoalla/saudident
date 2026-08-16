@@ -200,6 +200,132 @@ export const receptionHallFeatures = {
 
 export type ReceptionHallFeatureId = keyof typeof receptionHallFeatures;
 
+export const implantCorridorFeatures = {
+  "implant-corridor-clinic": {
+    shortLabel: "العيادة",
+    ariaLabel: "فتح معلومات العيادة",
+    icon: "clinic",
+    eyebrow: "العيادة",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط.",
+  },
+  "implant-corridor-unit": {
+    shortLabel: "وحدة زراعة الأسنان",
+    ariaLabel: "فتح معلومات وحدة زراعة الأسنان",
+    icon: "implant",
+    eyebrow: "وحدة زراعة الأسنان",
+    title: "وحدة زراعة الأسنان",
+    message: "وحدة زراعة الأسنان في فرع خميس مشيط.",
+  },
+} as const;
+
+export type ImplantCorridorFeatureId = keyof typeof implantCorridorFeatures;
+
+export const implantUnitLobbyFeatures = {
+  "implant-unit-clinic-23": {
+    shortLabel: "عيادة 23",
+    ariaLabel: "فتح معلومات عيادة 23",
+    icon: "clinic",
+    eyebrow: "العيادة 23",
+    title: "عيادة 23",
+    message: "العيادة رقم 23 في فرع خميس مشيط.",
+  },
+  "implant-unit-clinic-24": {
+    shortLabel: "عيادة 24",
+    ariaLabel: "فتح معلومات عيادة 24",
+    icon: "clinic",
+    eyebrow: "العيادة 24",
+    title: "عيادة 24",
+    message: "العيادة رقم 24 في فرع خميس مشيط.",
+  },
+  "implant-unit-clinic-25": {
+    shortLabel: "عيادة 25",
+    ariaLabel: "فتح معلومات عيادة 25",
+    icon: "clinic",
+    eyebrow: "العيادة 25",
+    title: "عيادة 25",
+    message: "العيادة رقم 25 في فرع خميس مشيط.",
+  },
+  "implant-unit-reception": {
+    shortLabel: "الاستقبال",
+    ariaLabel: "فتح معلومات الاستقبال",
+    icon: "reception",
+    eyebrow: "الاستقبال",
+    title: "استقبال وحدة زراعة الأسنان",
+    message: "منطقة الاستقبال في وحدة زراعة الأسنان بفرع خميس مشيط.",
+  },
+  "implant-unit-lounge": {
+    shortLabel: "الاستراحة",
+    ariaLabel: "فتح معلومات الاستراحة",
+    icon: "lounge",
+    eyebrow: "الاستراحة",
+    title: "استراحة وحدة زراعة الأسنان",
+    message: "منطقة الاستراحة في وحدة زراعة الأسنان بفرع خميس مشيط.",
+  },
+} as const;
+
+export type ImplantUnitLobbyFeatureId = keyof typeof implantUnitLobbyFeatures;
+
+export const receptionRightCorridorFeatures = {
+  "reception-right-clinic-near": {
+    shortLabel: "العيادة الأولى",
+    ariaLabel: "فتح معلومات العيادة الأولى",
+    icon: "clinic",
+    eyebrow: "العيادة الأولى",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط في الممر.",
+  },
+  "reception-right-clinic-far": {
+    shortLabel: "العيادة الثانية",
+    ariaLabel: "فتح معلومات العيادة الثانية",
+    icon: "clinic",
+    eyebrow: "العيادة الثانية",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط في الممر.",
+  },
+} as const;
+
+export type ReceptionRightCorridorFeatureId = keyof typeof receptionRightCorridorFeatures;
+
+export const receptionRightLobbyFeatures = {
+  "reception-right-lobby-clinic-near": {
+    shortLabel: "العيادة الأولى",
+    ariaLabel: "فتح معلومات العيادة الأولى",
+    icon: "clinic",
+    eyebrow: "العيادة الأولى",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط.",
+  },
+  "reception-right-lobby-clinic-far": {
+    shortLabel: "العيادة الثانية",
+    ariaLabel: "فتح معلومات العيادة الثانية",
+    icon: "clinic",
+    eyebrow: "العيادة الثانية",
+    title: "إحدى عيادات الفرع",
+    message: "إحدى عيادات فرع خميس مشيط.",
+  },
+  "reception-right-lobby-lounge": {
+    shortLabel: "الاستراحة",
+    ariaLabel: "فتح معلومات الاستراحة",
+    icon: "lounge",
+    eyebrow: "الاستراحة",
+    title: "استراحة فرع خميس مشيط",
+    message: "منطقة الاستراحة داخل فرع خميس مشيط.",
+  },
+  "reception-right-lobby-reception": {
+    shortLabel: "الاستقبال",
+    ariaLabel: "فتح معلومات الاستقبال",
+    icon: "reception",
+    eyebrow: "الاستقبال",
+    title: "استقبال فرع خميس مشيط",
+    message: "منطقة الاستقبال داخل فرع خميس مشيط.",
+    image: "/assets/branches/khamis-mushait/tour/saudident-reception-right-detail.webp",
+    imageAlt: "منطقة الاستقبال والاستراحة في فرع خميس مشيط",
+  },
+} as const;
+
+export type ReceptionRightLobbyFeatureId = keyof typeof receptionRightLobbyFeatures;
+
 export const doctors: SaudiDentDoctor[] = [
   { id:"youssef-alqarni",name:"أ. د. يوسف عبدالله القرني",specialty:"استشاري جذور وأعصاب",image:"/media/doctors/youssef-alqarni.jpg",source:team,verifiedAt:VERIFIED_AT },
   { id:"saad-alqahtani",name:"أ.د. سعد محمد علي القحطاني",specialty:"استشاري زراعة وأمراض اللثة",image:"/media/doctors/saad-alqahtani.jpg",source:team,verifiedAt:VERIFIED_AT },

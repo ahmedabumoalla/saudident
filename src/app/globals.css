@@ -3184,6 +3184,180 @@ video {
   container-type: size;
 }
 
+.sd-branch-choice,
+.sd-abha-placeholder {
+  position: absolute;
+  z-index: 70;
+  inset: 0;
+}
+
+.sd-branch-choice {
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(52, 196, 173, 0.18), transparent 34%),
+    radial-gradient(circle at 84% 86%, rgba(43, 139, 163, 0.17), transparent 38%),
+    linear-gradient(145deg, #f5fbfb, #e5f2f4);
+}
+
+.sd-branch-choice__panel {
+  display: grid;
+  justify-items: center;
+  width: min(100%, 920px);
+  padding: clamp(1.4rem, 4vw, 3.2rem);
+  border: 1px solid rgba(24, 94, 91, 0.14);
+  border-radius: clamp(26px, 4vw, 46px);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 30px 90px rgba(17, 62, 61, 0.16);
+  backdrop-filter: blur(20px);
+}
+
+.sd-branch-choice__logo {
+  width: clamp(190px, 26vw, 310px);
+  height: auto;
+  filter: brightness(0) saturate(100%) invert(20%) sepia(19%) saturate(1483%) hue-rotate(137deg) brightness(91%);
+}
+
+.sd-branch-choice__panel > p {
+  margin: 0.65rem 0 0;
+  color: #668b97;
+  font-size: clamp(0.85rem, 1.25vw, 1.05rem);
+}
+
+.sd-branch-choice__panel h1 {
+  margin: 0.35rem 0 clamp(1.25rem, 3vw, 2.2rem);
+  color: #123f45;
+  font-size: clamp(2rem, 5vw, 4.25rem);
+  line-height: 1.05;
+}
+
+.sd-branch-choice__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: clamp(0.85rem, 2vw, 1.35rem);
+  width: 100%;
+}
+
+.sd-branch-choice__option {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  min-height: clamp(190px, 27vh, 260px);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid rgba(22, 102, 91, 0.2);
+  border-radius: 28px;
+  background: #fff;
+  color: #174b50;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.sd-branch-choice__option.is-khamis {
+  background: linear-gradient(145deg, #0b4d48, #0b3338);
+  color: #fff;
+}
+
+.sd-branch-choice__option:hover,
+.sd-branch-choice__option:focus-visible {
+  border-color: #2ac681;
+  box-shadow: 0 20px 44px rgba(12, 74, 67, 0.2);
+  transform: translateY(-5px);
+}
+
+.sd-branch-choice__icon {
+  display: grid;
+  place-items: center;
+  width: clamp(72px, 8vw, 94px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(44, 205, 139, 0.45);
+  border-radius: 50%;
+  background: rgba(42, 198, 129, 0.12);
+  color: #24bd7a;
+}
+
+.sd-branch-choice__icon svg {
+  width: 48%;
+  height: 48%;
+}
+
+.sd-branch-choice__option strong {
+  font-size: clamp(1.25rem, 2.3vw, 1.85rem);
+}
+
+.sd-branch-choice__option small {
+  color: currentColor;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.sd-abha-placeholder {
+  background: #fff;
+}
+
+.sd-abha-placeholder > button,
+.sd-branch-choice-return {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 52px;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid rgba(33, 107, 103, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #174b50;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 12px 32px rgba(15, 64, 63, 0.14);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sd-abha-placeholder > button {
+  position: absolute;
+  top: clamp(18px, 2.4vw, 34px);
+  right: clamp(18px, 2.4vw, 34px);
+}
+
+.sd-abha-placeholder svg,
+.sd-branch-choice-return svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: #21b976;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sd-branch-choice-return {
+  position: absolute;
+  z-index: 7;
+  top: clamp(18px, 2.4vw, 34px);
+  left: clamp(18px, 2.4vw, 34px);
+  background: rgba(5, 42, 45, 0.72);
+  color: #fff;
+  backdrop-filter: blur(14px);
+}
+
+.sd-branch-choice-return:disabled {
+  cursor: wait;
+}
+
+@media (max-width: 640px) {
+  .sd-branch-choice__options {
+    grid-template-columns: 1fr;
+  }
+
+  .sd-branch-choice__option {
+    min-height: 150px;
+  }
+}
+
 .sd-conference-scene {
   position: absolute;
   z-index: 0;
@@ -3214,6 +3388,30 @@ video {
 
 .sd-conference-scene--reception-hall {
   --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-hall.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--implant-corridor {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-implant-corridor.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--implant-unit-lobby {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-implant-unit-lobby.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--reception-right-corridor {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-right-corridor.webp");
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-conference-scene--reception-right-lobby {
+  --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-right-lobby.webp");
   opacity: 0;
   visibility: hidden;
 }
@@ -3309,6 +3507,46 @@ video {
 }
 
 .sd-screen-presentation__blank.is-reception-hall .sd-conference-scene--reception-hall {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-implant-corridor .sd-conference-scene:not(.sd-conference-scene--implant-corridor) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-implant-corridor .sd-conference-scene--implant-corridor {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-implant-unit-lobby .sd-conference-scene:not(.sd-conference-scene--implant-unit-lobby) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-implant-unit-lobby .sd-conference-scene--implant-unit-lobby {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-reception-right-corridor .sd-conference-scene:not(.sd-conference-scene--reception-right-corridor) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-reception-right-corridor .sd-conference-scene--reception-right-corridor {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sd-screen-presentation__blank.is-reception-right-lobby .sd-conference-scene:not(.sd-conference-scene--reception-right-lobby) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sd-screen-presentation__blank.is-reception-right-lobby .sd-conference-scene--reception-right-lobby {
   opacity: 1;
   visibility: visible;
 }
@@ -4439,6 +4677,148 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-width: 150px;
 }
 
+.sd-implant-corridor-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-implant-corridor-hotspot--clinic {
+  --corridor-x: 67%;
+  --corridor-y: 58%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-implant-corridor-hotspot--implant {
+  --corridor-x: 48%;
+  --corridor-y: 60%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 180px;
+}
+
+.sd-implant-unit-lobby-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-implant-unit-lobby-hotspot--clinic-23 {
+  --corridor-x: 84%;
+  --corridor-y: 55%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-implant-unit-lobby-hotspot--clinic-24 {
+  --corridor-x: 68%;
+  --corridor-y: 56%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-implant-unit-lobby-hotspot--clinic-25 {
+  --corridor-x: 36%;
+  --corridor-y: 55%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-implant-unit-lobby-hotspot--reception {
+  --corridor-x: 87%;
+  --corridor-y: 76%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-implant-unit-lobby-hotspot--lounge {
+  --corridor-x: 22%;
+  --corridor-y: 75%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-corridor-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-reception-right-corridor-forward {
+  --arrow-x: 58%;
+  --arrow-y: 81%;
+  --arrow-size: 112px;
+  --arrow-angle: 0deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.78;
+  --arrow-opacity: 0.9;
+}
+
+.sd-reception-right-corridor-hotspot--clinic-near {
+  --corridor-x: 38%;
+  --corridor-y: 58%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-corridor-hotspot--clinic-far {
+  --corridor-x: 49%;
+  --corridor-y: 58%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-lobby-controls {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sd-reception-right-lobby-hotspot--clinic-near {
+  --corridor-x: 15%;
+  --corridor-y: 57%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-lobby-hotspot--clinic-far {
+  --corridor-x: 43%;
+  --corridor-y: 58%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-lobby-hotspot--lounge {
+  --corridor-x: 73%;
+  --corridor-y: 69%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
+.sd-reception-right-lobby-hotspot--reception {
+  --corridor-x: 90%;
+  --corridor-y: 73%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
 .sd-conference-image-coordinates > .is-layout-editable {
   border-radius: 18px;
   outline: 3px dashed rgba(255, 224, 90, 0.92);
@@ -4861,6 +5241,22 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
     --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-hall-1280.webp");
   }
 
+  .sd-conference-scene--implant-corridor {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-implant-corridor-1280.webp");
+  }
+
+  .sd-conference-scene--implant-unit-lobby {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-implant-unit-lobby-1280.webp");
+  }
+
+  .sd-conference-scene--reception-right-corridor {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-right-corridor-1280.webp");
+  }
+
+  .sd-conference-scene--reception-right-lobby {
+    --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-right-lobby-1280.webp");
+  }
+
   .sd-conference-scene--reception {
     --sd-conference-image: url("/assets/branches/khamis-mushait/tour/saudident-reception-1280.webp");
   }
@@ -4964,6 +5360,22 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   height: auto;
   margin-bottom: 1.05rem;
   filter: brightness(0) saturate(100%) invert(20%) sepia(19%) saturate(1483%) hue-rotate(137deg) brightness(91%);
+}
+
+.sd-main-feature__reception-image {
+  position: relative;
+  width: min(100%, 700px);
+  height: clamp(190px, 30vh, 310px);
+  margin-bottom: 1.15rem;
+  overflow: hidden;
+  border: 1px solid rgba(24, 111, 94, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 18px 42px rgba(17, 62, 61, 0.16);
+}
+
+.sd-main-feature__reception-image img {
+  object-fit: cover;
+  object-position: center;
 }
 
 .sd-main-feature__lounge-image {
