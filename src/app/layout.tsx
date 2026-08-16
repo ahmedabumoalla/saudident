@@ -11,13 +11,13 @@ const saudiDentArabic = IBM_Plex_Sans_Arabic({
 
 export const metadata: Metadata = {
   title: "سعودي دنت | Saudi Dent",
-  description: "سعودي دنت — طب الأسنان الحديث بتخصصاته تحت سقف واحد في خميس مشيط وأبها.",
+  description: "سعودي دنت — طب الأسنان الحديث بتخصصاته تحت سقف واحد في خميس مشيط وأبها",
   applicationName: "سعودي دنت",
   metadataBase: new URL("https://saudident.sa"),
   alternates: { canonical: "/" },
   openGraph: {
     title: "سعودي دنت | Saudi Dent",
-    description: "كُن مع الصفوة — خدمات طب الأسنان الحديث بخبرات متخصصة.",
+    description: "كُن مع الصفوة — خدمات طب الأسنان الحديث بخبرات متخصصة",
     url: "/",
     siteName: "سعودي دنت",
     locale: "ar_SA",

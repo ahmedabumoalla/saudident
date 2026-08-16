@@ -67,9 +67,9 @@ const waitingGallery: FloorGalleryImage[] = [
 ];
 
 export const khamisFloorHotspots: FloorHotspot[] = [
-  { id: "meeting-room", x: 19.8, y: 16.2, kind: "meeting", title: "غرفة الاجتماعات", demoOrder: 1, description: "مساحة اجتماعات إدارية." },
-  { id: "admin-office", x: 33.6, y: 8.2, kind: "admin", title: "الإدارة", demoOrder: 2, description: "مساحة العمل الإداري في الفرع." },
-  { id: "patient-relations", x: 41.8, y: 8.2, kind: "patient-relations", title: "علاقات المرضى", demoOrder: 3, description: "خدمة ملاحظات واستفسارات المراجعين." },
+  { id: "meeting-room", x: 19.8, y: 16.2, kind: "meeting", title: "غرفة الاجتماعات", demoOrder: 1, description: "مساحة اجتماعات إدارية" },
+  { id: "admin-office", x: 33.6, y: 8.2, kind: "admin", title: "الإدارة", demoOrder: 2, description: "مساحة العمل الإداري في الفرع" },
+  { id: "patient-relations", x: 41.8, y: 8.2, kind: "patient-relations", title: "علاقات المرضى", demoOrder: 3, description: "خدمة ملاحظات واستفسارات المراجعين" },
 
   { id: "root-canal-01", x: 49.4, y: 8.5, kind: "clinic", title: "عيادة علاج الجذور 1", clinicCategory: "root-canal", demoOrder: 4 },
   { id: "root-canal-02", x: 57.0, y: 8.5, kind: "clinic", title: "عيادة علاج الجذور 2", clinicCategory: "root-canal", demoOrder: 5 },
@@ -79,7 +79,7 @@ export const khamisFloorHotspots: FloorHotspot[] = [
 
   { id: "implant-01", x: 29.3, y: 22.0, kind: "clinic", title: "عيادة زراعة الأسنان 1", clinicCategory: "implant", demoOrder: 9 },
   { id: "implant-02", x: 36.0, y: 22.0, kind: "clinic", title: "عيادة زراعة الأسنان 2", clinicCategory: "implant", demoOrder: 10 },
-  { id: "admin-upper-02", x: 43.1, y: 22.0, kind: "admin", title: "الإدارة", demoOrder: 11, description: "مساحة العمل الإداري في الفرع." },
+  { id: "admin-upper-02", x: 43.1, y: 22.0, kind: "admin", title: "الإدارة", demoOrder: 11, description: "مساحة العمل الإداري في الفرع" },
   { id: "restroom-01", x: 51.6, y: 22.5, kind: "restroom", title: "دورات المياه 1", demoOrder: 12 },
   { id: "restroom-02", x: 51.6, y: 33.0, kind: "restroom", title: "دورات المياه 2", demoOrder: 13 },
   { id: "examination-01", x: 65.0, y: 22.5, kind: "clinic", title: "غرفة الفحص 1", clinicCategory: "examination", demoOrder: 14 },
@@ -96,14 +96,14 @@ export const khamisFloorHotspots: FloorHotspot[] = [
   { id: "general-01", x: 38.2, y: 51.0, kind: "clinic", title: "عيادة طب الأسنان العام 1", clinicCategory: "general", demoOrder: 22 },
   { id: "general-02", x: 44.0, y: 51.0, kind: "clinic", title: "عيادة طب الأسنان العام 2", clinicCategory: "general", demoOrder: 23 },
   { id: "reception-main", x: 34.0, y: 58.7, kind: "reception", title: "الاستقبال الرئيسي", demoOrder: 24, gallery: receptionGallery },
-  { id: "employee-affairs", x: 24.1, y: 61.2, kind: "admin", title: "شؤون الموظفين", demoOrder: 24.5, description: "مكتب شؤون الموظفين في الفرع." },
+  { id: "employee-affairs", x: 24.1, y: 61.2, kind: "admin", title: "شؤون الموظفين", demoOrder: 24.5, description: "مكتب شؤون الموظفين في الفرع" },
   { id: "reception-secondary", x: 64.8, y: 63.2, kind: "reception", title: "الاستقبال الثاني", demoOrder: 25, gallery: receptionGallery },
-  { id: "storage-upper-center", x: 52.3, y: 63.0, kind: "storage", title: "المستودع", demoOrder: 25.5, description: "مساحة تشغيلية مخصصة للتخزين." },
-  { id: "customer-service", x: 55.4, y: 62.5, kind: "customer-service", title: "خدمة العملاء", demoOrder: 26, description: "المساعدة في المواعيد والاستفسارات." },
+  { id: "storage-upper-center", x: 52.3, y: 63.0, kind: "storage", title: "المستودع", demoOrder: 25.5, description: "مساحة تشغيلية مخصصة للتخزين" },
+  { id: "customer-service", x: 55.4, y: 62.5, kind: "customer-service", title: "خدمة العملاء", demoOrder: 26, description: "المساعدة في المواعيد والاستفسارات" },
   { id: "waiting-main", x: 42.0, y: 63.7, kind: "waiting", title: "منطقة الانتظار الرئيسية", demoOrder: 27, gallery: waitingGallery },
-  { id: "elevator", x: 52.1, y: 69.0, kind: "elevator", title: "المصعد", demoOrder: 28, description: "نقطة الوصول الرئيسية للفرع." },
+  { id: "elevator", x: 52.1, y: 69.0, kind: "elevator", title: "المصعد", demoOrder: 28, description: "نقطة الوصول الرئيسية للفرع" },
   { id: "radiology", x: 73.2, y: 40.4, kind: "radiology", title: "الأشعة المركزية", demoOrder: 29 },
-  { id: "storage-center-right", x: 74.3, y: 63.0, kind: "storage", title: "المستودع", demoOrder: 30, description: "مساحة تشغيلية مخصصة للتخزين." },
+  { id: "storage-center-right", x: 74.3, y: 63.0, kind: "storage", title: "المستودع", demoOrder: 30, description: "مساحة تشغيلية مخصصة للتخزين" },
   { id: "prayer-room", x: 84.0, y: 59.5, kind: "prayer", title: "المصلى", demoOrder: 31 },
 
   { id: "orthodontics-01", x: 84.2, y: 35.5, kind: "clinic", title: "عيادة تقويم الأسنان 1", clinicCategory: "orthodontics", demoOrder: 32 },
@@ -111,14 +111,14 @@ export const khamisFloorHotspots: FloorHotspot[] = [
   { id: "restorative-01", x: 83.8, y: 68.0, kind: "clinic", title: "عيادة الإصلاح والتجميل 1", clinicCategory: "restorative", demoOrder: 34 },
   { id: "restorative-02", x: 83.8, y: 83.4, kind: "clinic", title: "عيادة الإصلاح والتجميل 2", clinicCategory: "restorative", demoOrder: 35 },
 
-  { id: "admin-area", x: 29.0, y: 85.0, kind: "admin", title: "المنطقة الإدارية", demoOrder: 36, description: "منطقة العمل الإداري في الفرع." },
+  { id: "admin-area", x: 29.0, y: 85.0, kind: "admin", title: "المنطقة الإدارية", demoOrder: 36, description: "منطقة العمل الإداري في الفرع" },
   { id: "storage", x: 41.5, y: 89.0, kind: "storage", title: "المستودع", demoOrder: 37 },
   { id: "waiting-south", x: 54.5, y: 89.0, kind: "waiting", title: "منطقة الانتظار الجنوبية", demoOrder: 38, gallery: waitingGallery },
   { id: "implant-03", x: 59.4, y: 88.0, kind: "clinic", title: "عيادة زراعة الأسنان 3", clinicCategory: "implant", demoOrder: 39 },
   { id: "implant-04", x: 66.0, y: 88.0, kind: "clinic", title: "عيادة زراعة الأسنان 4", clinicCategory: "implant", demoOrder: 40 },
   { id: "implant-05", x: 79.1, y: 88.0, kind: "clinic", title: "عيادة زراعة الأسنان 5", clinicCategory: "implant", demoOrder: 41 },
   { id: "implant-06", x: 87.0, y: 88.0, kind: "clinic", title: "عيادة زراعة الأسنان 6", clinicCategory: "implant", demoOrder: 42 },
-  { id: "sterilization", x: 73.0, y: 88.0, kind: "sterilization", title: "منطقة التعقيم", demoOrder: 43, description: "منطقة تجهيز وتعقيم الأدوات." },
+  { id: "sterilization", x: 73.0, y: 88.0, kind: "sterilization", title: "منطقة التعقيم", demoOrder: 43, description: "منطقة تجهيز وتعقيم الأدوات" },
 ];
 
 // Presentation-only clinic assignment.

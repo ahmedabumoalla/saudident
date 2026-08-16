@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "سعودي دنت | Saudi Dent",
     short_name: "سعودي دنت",
-    description: "طب الأسنان الحديث بتخصصاته تحت سقف واحد.",
+    description: "طب الأسنان الحديث بتخصصاته تحت سقف واحد",
     start_url: "/",
     display: "standalone",
     background_color: "#02070b",

@@ -17,7 +17,7 @@ export const saudident = {
   app: {
     googlePlay: "https://play.google.com/store/apps/details?id=com.saudident.app&hl=ar",
     appStore: "https://apps.apple.com/sa/app/%D8%B3%D8%B9%D9%88%D8%AF%D9%8A-%D8%AF%D9%86%D8%AA-saudi-dent/id6787029901?l=ar",
-    description: "تصفّح الأطباء وملفاتهم وأوقات العمل، اختر الموعد المناسب، وأدِر حجوزاتك وتنبيهاتك من مكان واحد.",
+    description: "تصفّح الأطباء وملفاتهم وأوقات العمل، اختر الموعد المناسب، وأدِر حجوزاتك وتنبيهاتك من مكان واحد",
     source: "https://play.google.com/store/apps/details?id=com.saudident.app&hl=ar",
     verifiedAt: VERIFIED_AT,
   },
@@ -37,24 +37,115 @@ export const stats: SaudiDentStat[] = [
 ];
 
 export const storyMoments = [
-  { id: "specialties", index: "01", title: "طب الأسنان تحت سقف واحد", body: "عيادات أسنان استشارية تضم خدمات طب الأسنان الحديث وتخصصاته في مكان واحد.", source: about, verifiedAt: VERIFIED_AT },
-  { id: "quality", index: "02", title: "الجودة ممارسة يومية", body: "رسالتنا تقديم خدمات الأسنان بحرفية عالية وضمن الجودة المرجوة، بممارسات موثوقة وواضحة.", source: about, verifiedAt: VERIFIED_AT },
-  { id: "expertise", index: "03", title: "كفاءة علمية وإكلينيكية", body: "فريق مؤهل يضم استشاريين وأخصائيين وأعضاء هيئة تدريس، بخبرة علمية وإكلينيكية.", source: about, verifiedAt: VERIFIED_AT },
-  { id: "learning", index: "04", title: "تعليم مستمر", body: "برنامج نشط للتعليم الطبي المستمر ونقل الخبرات من خلال أكاديمية سعودي دنت.", source: about, verifiedAt: VERIFIED_AT },
-  { id: "vision", index: "05", title: "رؤية تتقدم", body: "طموح معلن لأن تصبح سعودي دنت من رواد طب الأسنان في أنحاء المملكة.", source: about, verifiedAt: VERIFIED_AT },
+  { id: "specialties", index: "01", title: "طب الأسنان تحت سقف واحد", body: "عيادات أسنان استشارية تضم خدمات طب الأسنان الحديث وتخصصاته في مكان واحد", source: about, verifiedAt: VERIFIED_AT },
+  { id: "quality", index: "02", title: "الجودة ممارسة يومية", body: "رسالتنا تقديم خدمات الأسنان بحرفية عالية وضمن الجودة المرجوة، بممارسات موثوقة وواضحة", source: about, verifiedAt: VERIFIED_AT },
+  { id: "expertise", index: "03", title: "كفاءة علمية وإكلينيكية", body: "فريق مؤهل يضم استشاريين وأخصائيين وأعضاء هيئة تدريس، بخبرة علمية وإكلينيكية", source: about, verifiedAt: VERIFIED_AT },
+  { id: "learning", index: "04", title: "تعليم مستمر", body: "برنامج نشط للتعليم الطبي المستمر ونقل الخبرات من خلال أكاديمية سعودي دنت", source: about, verifiedAt: VERIFIED_AT },
+  { id: "vision", index: "05", title: "رؤية تتقدم", body: "طموح معلن لأن تصبح سعودي دنت من رواد طب الأسنان في أنحاء المملكة", source: about, verifiedAt: VERIFIED_AT },
 ];
 
 export const services: SaudiDentService[] = [
-  { id: "implants", title: "زراعة الأسنان", description: "تعويض الأسنان المفقودة بزرعات تتلاءم مع الأسنان الموجودة دون التأثير على الأسنان المجاورة.", icon: "implant", source: servicesSource, verifiedAt: VERIFIED_AT },
-  { id: "root-canal", title: "علاج الجذور وعصب الأسنان", description: "علاج يهدف إلى إنقاذ السن التالف والمحافظة عليه عند اكتشاف المشكلة وعلاجها مبكرًا.", icon: "root", source: servicesSource, verifiedAt: VERIFIED_AT },
-  { id: "prostho", title: "التركيبات الثابتة والمتحركة", description: "تعويض الأسنان المفقودة لاستعادة المضغ والحفاظ على المسافات واستعادة الشكل الجمالي للفم.", icon: "prostho", source: servicesSource, verifiedAt: VERIFIED_AT },
-  { id: "gum", title: "جراحة اللثة والأسنان", description: "العناية بالتهابات وأمراض اللثة التي تؤثر على الأنسجة الرخوة والعظام المحيطة بالأسنان.", icon: "gum", source: servicesSource, verifiedAt: VERIFIED_AT },
-  { id: "braces", title: "تقويم الأسنان", description: "معالجة مشكلات ازدحام الأسنان ونمو الفك واصطفاف الأسنان بوسائل يحددها الطبيب.", icon: "braces", source: servicesSource, verifiedAt: VERIFIED_AT },
-  { id: "smile", title: "ابتسامة هوليوود", description: "قشور رقيقة مخصصة لتحسين لون وشكل وحجم الأسنان بما يحاكي مظهرها الطبيعي.", icon: "smile", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "implants", title: "زراعة الأسنان", description: "تعويض الأسنان المفقودة بزرعات تتلاءم مع الأسنان الموجودة دون التأثير على الأسنان المجاورة", icon: "implant", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "root-canal", title: "علاج الجذور وعصب الأسنان", description: "علاج يهدف إلى إنقاذ السن التالف والمحافظة عليه عند اكتشاف المشكلة وعلاجها مبكرًا", icon: "root", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "prostho", title: "التركيبات الثابتة والمتحركة", description: "تعويض الأسنان المفقودة لاستعادة المضغ والحفاظ على المسافات واستعادة الشكل الجمالي للفم", icon: "prostho", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "gum", title: "جراحة اللثة والأسنان", description: "العناية بالتهابات وأمراض اللثة التي تؤثر على الأنسجة الرخوة والعظام المحيطة بالأسنان", icon: "gum", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "braces", title: "تقويم الأسنان", description: "معالجة مشكلات ازدحام الأسنان ونمو الفك واصطفاف الأسنان بوسائل يحددها الطبيب", icon: "braces", source: servicesSource, verifiedAt: VERIFIED_AT },
+  { id: "smile", title: "ابتسامة هوليوود", description: "قشور رقيقة مخصصة لتحسين لون وشكل وحجم الأسنان بما يحاكي مظهرها الطبيعي", icon: "smile", source: servicesSource, verifiedAt: VERIFIED_AT },
   { id: "oral", title: "علاج أمراض الفم والمفصل الصدغي", icon: "oral", source: website, verifiedAt: VERIFIED_AT },
   { id: "fillings", title: "الحشوات الطبية", icon: "filling", source: website, verifiedAt: VERIFIED_AT },
   { id: "pediatric", title: "طب أسنان الأطفال والتخدير العام", icon: "kids", source: website, verifiedAt: VERIFIED_AT },
 ];
+
+export const xrayThirdFeatures = {
+  "third-corridor-lounge": {
+    shortLabel: "هدوء يسبق ابتسامتك",
+    ariaLabel: "فتح رسالة الاستراحة",
+    icon: "lounge",
+    eyebrow: "مساحة تمنحك لحظة هدوء",
+    title: "راحتك جزء من كل خطوة",
+    message: "هيأنا هذه الاستراحة لتمنحك وقتًا هادئًا ومريحًا بين خطوات زيارتك، لأن العناية تبدأ من شعورك بالطمأنينة.",
+  },
+  "third-clinic-center": {
+    shortLabel: "فهم أدق لاحتياجك",
+    ariaLabel: "فتح رسالة العيادة الأولى",
+    icon: "clinic",
+    eyebrow: "عناية تبدأ بفهمك",
+    title: "كل تفصيلة تقود إلى خطة أوضح",
+    message: "نستمع إلى احتياجك ونراجع التفاصيل بعناية لنمنحك تصورًا واضحًا وخطوات علاج تناسب رحلتك بثقة وراحة.",
+  },
+  "third-clinic-right": {
+    shortLabel: "عناية تتابع تفاصيلك",
+    ariaLabel: "فتح رسالة العيادة الثانية",
+    icon: "clinic",
+    eyebrow: "اهتمام يستمر معك",
+    title: "الدقة تصنع تجربة أكثر اطمئنانًا",
+    message: "نهتم بتفاصيل كل خطوة ونتابع تقدم رحلتك لتبقى تجربتك واضحة ومريحة من بداية العناية حتى اكتمالها.",
+  },
+} as const;
+
+export type XrayThirdFeatureId = keyof typeof xrayThirdFeatures;
+
+export const xrayFourthFeatures = {
+  "fourth-call-center": {
+    shortLabel: "خدمتك تبدأ من هنا",
+    ariaLabel: "فتح رسالة الكول سنتر",
+    eyebrow: "الكول سنتر — صوتك يصل إلينا",
+    title: "إجابة واضحة من أول اتصال",
+    message: "فريق الكول سنتر يساعدك في الاستفسارات وتنظيم المواعيد وتوجيهك إلى الخطوة المناسبة لتبدأ زيارتك براحة ووضوح.",
+  },
+} as const;
+
+export type XrayFourthFeatureId = keyof typeof xrayFourthFeatures;
+
+export const xrayFifthFeatures = {
+  "fifth-orthodontics-left": {
+    shortLabel: "بداية مدروسة",
+    ariaLabel: "فتح رسالة عيادة التقويم الأولى",
+    icon: "orthodontics",
+    eyebrow: "عيادة تقويم — بداية مدروسة",
+    title: "نفهم ابتسامتك قبل أن نرسم مسارها",
+    message: "نبدأ بقراءة احتياجك بعناية لنرتب خطوات تقويم واضحة تناسب ابتسامتك وتمنحك الثقة من أول زيارة.",
+  },
+  "fifth-orthodontics-center": {
+    shortLabel: "دقة كل خطوة",
+    ariaLabel: "فتح رسالة عيادة التقويم الثانية",
+    icon: "orthodontics",
+    eyebrow: "عيادة تقويم — دقة في كل خطوة",
+    title: "مسار متوازن نحو ابتسامة أكثر انسجامًا",
+    message: "في رحلة التقويم نهتم بكل تفصيلة ونتابع كل خطوة بوضوح لتتقدم ابتسامتك بثبات وطمأنينة.",
+  },
+  "fifth-orthodontics-right": {
+    shortLabel: "متابعة مستمرة",
+    ariaLabel: "فتح رسالة عيادة التقويم الثالثة",
+    icon: "orthodontics",
+    eyebrow: "عيادة تقويم — اهتمام مستمر",
+    title: "ابتسامتك تتغير… وعنايتنا تواكبها",
+    message: "نرافق تقدمك باهتمام ونراجع التفاصيل في كل مرحلة لتبقى رحلتك مريحة وخطواتك أقرب إلى النتيجة التي تتطلع إليها.",
+  },
+  "fifth-preliminary-exam": {
+    shortLabel: "بداية أوضح",
+    ariaLabel: "فتح رسالة غرفة الفحص الأولي",
+    icon: "exam",
+    eyebrow: "غرفة الفحص الأولي — أول خيط للحكاية",
+    title: "قبل الخطة… نمنح ابتسامتك وقتها",
+    message: "هنا تبدأ الزيارة بنظرة شاملة واهتمام هادئ يساعدان على فهم احتياجك وتوجيهك إلى الخطوة الأنسب بثقة ووضوح.",
+  },
+} as const;
+
+export type XrayFifthFeatureId = keyof typeof xrayFifthFeatures;
+
+export const khamisLobbySideFeatures = {
+  "khamis-side-lounge": {
+    shortLabel: "استراحة تكمل راحتك",
+    ariaLabel: "فتح رسالة استراحة الردهة",
+    icon: "lounge",
+    eyebrow: "زاوية هادئة في قلب الردهة",
+    title: "خذ لحظتك… والباقي علينا",
+    message: "في سعودي دنت نهتم بأن تكون كل لحظة من زيارتك أخف وأهدأ؛ لذلك هيأنا هذه الاستراحة لتستعيد فيها راحتك قبل أن تواصل يومك بابتسامة.",
+  },
+} as const;
+
+export type KhamisLobbySideFeatureId = keyof typeof khamisLobbySideFeatures;
 
 export const doctors: SaudiDentDoctor[] = [
   { id:"youssef-alqarni",name:"أ. د. يوسف عبدالله القرني",specialty:"استشاري جذور وأعصاب",image:"/media/doctors/youssef-alqarni.jpg",source:team,verifiedAt:VERIFIED_AT },
