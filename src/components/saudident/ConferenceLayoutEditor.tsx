@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
 import savedConferenceLayout from "@/data/conference-layout.json";
 
 type ControlPlacement = {
@@ -20,7 +20,11 @@ type SelectedControl = ResolvedControlPlacement & {
   key: string;
   label: string;
   isArrow: boolean;
+  controlId?: string;
+  removable: boolean;
 };
+
+type SelectionMetadata = Pick<SelectedControl, "controlId" | "removable">;
 
 type DragState = {
   pointerId: number;
@@ -34,6 +38,12 @@ type DragState = {
 };
 
 type SaveStatus = "saved" | "saving" | "error";
+
+export type LayoutEditorAddition = {
+  id: string;
+  label: string;
+  icon: ReactNode;
+};
 
 const CONTROL_SELECTOR = [
   ".sd-conference-image-coordinates > button",
@@ -49,7 +59,7 @@ const GENERIC_CLASSES = new Set([
 function isEditorRequested() {
   return process.env.NODE_ENV === "development"
     && typeof window !== "undefined"
-    && new URLSearchParams(window.location.search).get("calibrate") === "1";
+    && new URLSearchParams(window.location.search).get("calibrate") !== "0";
 }
 
 function subscribeToEditorRequest() {
@@ -57,6 +67,7 @@ function subscribeToEditorRequest() {
 }
 
 function getControlKey(scene: string, element: HTMLElement, index: number) {
+  if (element.dataset.layoutId) return `${scene}:${element.dataset.layoutId}`;
   const identity = Array.from(element.classList)
     .filter((className) => className.startsWith("sd-") && !GENERIC_CLASSES.has(className))
     .join(".");
@@ -93,9 +104,19 @@ function resolvePlacement(
 export function ConferenceLayoutEditor({
   rootRef,
   activeScene,
+  additions = [],
+  onAddControl,
+  onRemoveControl,
+  onEditingChange,
+  refreshKey,
 }: {
   rootRef: RefObject<HTMLDivElement | null>;
   activeScene: string;
+  additions?: LayoutEditorAddition[];
+  onAddControl?: (id: string) => void;
+  onRemoveControl?: (id: string) => void;
+  onEditingChange?: (active: boolean) => void;
+  refreshKey?: string | number;
 }) {
   const editorAvailable = useSyncExternalStore(subscribeToEditorRequest, isEditorRequested, () => false);
   const [editingActive, setEditingActive] = useState(true);
@@ -110,12 +131,18 @@ export function ConferenceLayoutEditor({
     layoutRef.current = layout;
   }, [layout]);
 
+  useEffect(() => {
+    onEditingChange?.(editorAvailable && editingActive);
+    return () => onEditingChange?.(false);
+  }, [editingActive, editorAvailable, onEditingChange]);
+
   const updatePlacement = useCallback((
     key: string,
     label: string,
     placement: ResolvedControlPlacement,
     isArrow: boolean,
     scheduleSave = true,
+    metadata?: SelectionMetadata,
   ) => {
     const normalized = {
       x: round(clamp(placement.x, 0, 100)),
@@ -126,7 +153,15 @@ export function ConferenceLayoutEditor({
       depth: round(clamp(placement.depth, 0.25, 1.5)),
     };
     setLayout((current) => ({ ...current, [key]: normalized }));
-    setSelected({ key, label, isArrow, ...normalized });
+    setSelected((current) => ({
+      key,
+      label,
+      isArrow,
+      ...normalized,
+      ...(metadata ?? (current?.key === key
+        ? { controlId: current.controlId, removable: current.removable }
+        : { removable: false })),
+    }));
     if (scheduleSave) setSaveStatus("saving");
   }, []);
 
@@ -163,18 +198,19 @@ export function ConferenceLayoutEditor({
         element.style.setProperty("--sd-layout-tilt", `${resolved.tilt}deg`);
         element.style.setProperty("--sd-layout-depth", String(resolved.depth));
       } else {
-        element.style.removeProperty("left");
-        element.style.removeProperty("top");
-        element.style.removeProperty("--sd-layout-scale");
-        element.style.removeProperty("--sd-layout-angle");
-        element.style.removeProperty("--sd-layout-tilt");
-        element.style.removeProperty("--sd-layout-depth");
+        const fallback = defaultsRef.current[key] as ResolvedControlPlacement;
+        element.style.left = `${fallback.x}%`;
+        element.style.top = `${fallback.y}%`;
+        element.style.setProperty("--sd-layout-scale", String(fallback.scale));
+        element.style.setProperty("--sd-layout-angle", `${fallback.angle}deg`);
+        element.style.setProperty("--sd-layout-tilt", `${fallback.tilt}deg`);
+        element.style.setProperty("--sd-layout-depth", String(fallback.depth));
       }
 
       element.classList.toggle("is-layout-editable", editorAvailable && editingActive);
       element.classList.toggle("is-layout-selected", editorAvailable && editingActive && selected?.key === key);
     });
-  }, [activeScene, editingActive, editorAvailable, layout, rootRef, selected?.key]);
+  }, [activeScene, editingActive, editorAvailable, layout, refreshKey, rootRef, selected?.key]);
 
   useEffect(() => {
     if (!editorAvailable || saveStatus !== "saving") return;
@@ -244,7 +280,10 @@ export function ConferenceLayoutEditor({
         isArrow,
       };
       element.setPointerCapture(event.pointerId);
-      updatePlacement(key, label, placement, isArrow, false);
+      updatePlacement(key, label, placement, isArrow, false, {
+        controlId: element.dataset.layoutId,
+        removable: element.dataset.layoutRemovable === "true",
+      });
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -318,6 +357,21 @@ export function ConferenceLayoutEditor({
     if (!selected) return;
     const original = defaultsRef.current[selected.key] as ResolvedControlPlacement | undefined;
     if (original) updatePlacement(selected.key, selected.label, original, selected.isArrow);
+  };
+
+  const removeSelected = () => {
+    if (!selected?.removable || !selected.controlId || !onRemoveControl) return;
+    const key = selected.key;
+    const controlId = selected.controlId;
+    setLayout((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    delete defaultsRef.current[key];
+    setSelected(null);
+    setSaveStatus("saving");
+    onRemoveControl(controlId);
   };
 
   return (
@@ -408,6 +462,9 @@ export function ConferenceLayoutEditor({
               <button type="button" onClick={() => nudgeSelected(0, 0.25)}>↓</button>
               <button type="button" onClick={() => nudgeSelected(-0.25, 0)}>←</button>
               <button type="button" onClick={resetSelected}>إعادة</button>
+              {selected.removable && onRemoveControl && (
+                <button type="button" className="is-danger" onClick={removeSelected}>حذف</button>
+              )}
             </div>
           </div>
         ) : (
@@ -415,6 +472,26 @@ export function ConferenceLayoutEditor({
         )
       ) : (
         <p>التنقل يعمل الآن بصورة طبيعية. اضغط «وضع التصفح» للعودة إلى التحرير.</p>
+      )}
+
+      {editingActive && additions.length > 0 && onAddControl && (
+        <div className="sd-layout-editor__additions">
+          <span>إضافة إلى الصورة الحالية</span>
+          <div>
+            {additions.map((addition) => (
+              <button
+                type="button"
+                key={addition.id}
+                onClick={() => onAddControl(addition.id)}
+                aria-label={`إضافة ${addition.label}`}
+                title={`إضافة ${addition.label}`}
+              >
+                {addition.icon}
+                <small>{addition.label}</small>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </aside>
   );

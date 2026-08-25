@@ -2,14 +2,56 @@
 
 import Image from "next/image";
 import { Armchair, Bone, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { AbhaTourExperience } from "@/components/saudident/AbhaTourExperience";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
 import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
+const CINEMATIC_IDLE_MS = 4600;
+
+function isCinematicRequested() {
+  return typeof window === "undefined"
+    || new URLSearchParams(window.location.search).get("cinematic") !== "0";
+}
+
+function subscribeToCinematicRequest() {
+  return () => undefined;
+}
 
 type ConferenceScene = "hall" | "left-lobby" | "left-reception" | "reception-hall" | "implant-corridor" | "implant-unit-lobby" | "reception-right-corridor" | "reception-right-lobby" | "reception" | "main-reception" | "clinic-corridor" | "prayer-corridor" | "xray-corridor" | "xray-corridor-next" | "xray-corridor-third" | "xray-corridor-fourth" | "xray-corridor-fifth" | "khamis-lobby-side";
+
+const KHAMIS_LEFT_SECTION: ConferenceScene[] = [
+  "left-lobby",
+  "left-reception",
+  "reception-hall",
+  "implant-corridor",
+  "implant-unit-lobby",
+  "reception-right-corridor",
+  "reception-right-lobby",
+];
+
+const KHAMIS_RIGHT_SECTION: ConferenceScene[] = [
+  "reception",
+  "main-reception",
+  "clinic-corridor",
+  "prayer-corridor",
+  "xray-corridor",
+  "xray-corridor-next",
+  "xray-corridor-third",
+  "xray-corridor-fourth",
+  "xray-corridor-fifth",
+  "khamis-lobby-side",
+];
+
+function getKhamisSceneCounter(scene: ConferenceScene) {
+  const leftIndex = KHAMIS_LEFT_SECTION.indexOf(scene);
+  if (leftIndex >= 0) return { current: leftIndex + 1, total: KHAMIS_LEFT_SECTION.length };
+  const rightIndex = KHAMIS_RIGHT_SECTION.indexOf(scene);
+  if (rightIndex >= 0) return { current: rightIndex + 1, total: KHAMIS_RIGHT_SECTION.length };
+  return null;
+}
 type BranchView = "choice" | "khamis" | "abha";
 type MainSceneFeature =
   | "welcome"
@@ -95,6 +137,7 @@ function FloorRouteGuide() {
 }
 
 export function CinematicScreenExperience() {
+  const cinematicEnabled = useSyncExternalStore(subscribeToCinematicRequest, isCinematicRequested, () => true);
   const rootRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const sceneTimelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -107,6 +150,8 @@ export function CinematicScreenExperience() {
   const [sceneTransitioning, setSceneTransitioning] = useState(false);
   const [patientRelationsOpen, setPatientRelationsOpen] = useState(false);
   const [mainSceneFeature, setMainSceneFeature] = useState<MainSceneFeature | null>(null);
+  const [layoutEditing, setLayoutEditing] = useState(false);
+  const [chromeIdle, setChromeIdle] = useState(false);
   const activeXrayThirdFeature = isXrayThirdFeature(mainSceneFeature) ? xrayThirdFeatures[mainSceneFeature] : null;
   const activeXrayFourthFeature = isXrayFourthFeature(mainSceneFeature) ? xrayFourthFeatures[mainSceneFeature] : null;
   const activeXrayFifthFeature = isXrayFifthFeature(mainSceneFeature) ? xrayFifthFeatures[mainSceneFeature] : null;
@@ -116,6 +161,33 @@ export function CinematicScreenExperience() {
   const activeImplantUnitLobbyFeature = isImplantUnitLobbyFeature(mainSceneFeature) ? implantUnitLobbyFeatures[mainSceneFeature] : null;
   const activeReceptionRightCorridorFeature = isReceptionRightCorridorFeature(mainSceneFeature) ? receptionRightCorridorFeatures[mainSceneFeature] : null;
   const activeReceptionRightLobbyFeature = isReceptionRightLobbyFeature(mainSceneFeature) ? receptionRightLobbyFeatures[mainSceneFeature] : null;
+  const khamisSceneCounter = getKhamisSceneCounter(activeScene);
+
+  const handleLayoutEditingChange = useCallback((active: boolean) => {
+    setLayoutEditing(active);
+    setChromeIdle(false);
+  }, []);
+
+  useEffect(() => {
+    if (!cinematicEnabled || !openingComplete || branchView === "choice" || layoutEditing) return;
+    let timer = window.setTimeout(() => setChromeIdle(true), CINEMATIC_IDLE_MS);
+    const wakeChrome = () => {
+      setChromeIdle(false);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setChromeIdle(true), CINEMATIC_IDLE_MS);
+    };
+    window.addEventListener("pointerdown", wakeChrome, { passive: true });
+    window.addEventListener("pointermove", wakeChrome, { passive: true });
+    window.addEventListener("touchstart", wakeChrome, { passive: true });
+    window.addEventListener("keydown", wakeChrome);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", wakeChrome);
+      window.removeEventListener("pointermove", wakeChrome);
+      window.removeEventListener("touchstart", wakeChrome);
+      window.removeEventListener("keydown", wakeChrome);
+    };
+  }, [branchView, cinematicEnabled, layoutEditing, openingComplete]);
 
   const showBranchChoice = useCallback(() => {
     const tour = rootRef.current?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
@@ -2072,7 +2144,7 @@ export function CinematicScreenExperience() {
   return (
     <div
       ref={rootRef}
-      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}`}
+      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}${cinematicEnabled ? " is-cinematic" : " is-cinematic-disabled"}${layoutEditing ? " is-calibrating" : ""}${chromeIdle && !layoutEditing ? " is-chrome-idle" : ""}`}
       dir="rtl"
     >
       <div className="sd-screen-presentation__ambient" aria-hidden="true" />
@@ -2116,6 +2188,22 @@ export function CinematicScreenExperience() {
         <div className="sd-conference-scene sd-conference-scene--xray-corridor-fifth" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--khamis-lobby-side" aria-hidden="true" />
         <div className="sd-conference-scene-transition" aria-hidden="true" />
+
+        {branchView === "khamis" && khamisSceneCounter && (
+          <div
+            className="sd-tour-pagination sd-khamis-tour-pagination"
+            role="status"
+            aria-label={`الصورة ${khamisSceneCounter.current} من ${khamisSceneCounter.total}`}
+          >
+            {Array.from({ length: khamisSceneCounter.total }, (_, index) => (
+              <span
+                key={index}
+                className={index === khamisSceneCounter.current - 1 ? "is-active" : undefined}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+        )}
 
         {branchView === "khamis" && activeScene === "hall" && (
           <button
@@ -2839,7 +2927,13 @@ export function CinematicScreenExperience() {
           </div>
         )}
 
-        {branchView === "khamis" && <ConferenceLayoutEditor rootRef={rootRef} activeScene={activeScene} />}
+        {branchView === "khamis" && (
+          <ConferenceLayoutEditor
+            rootRef={rootRef}
+            activeScene={activeScene}
+            onEditingChange={handleLayoutEditingChange}
+          />
+        )}
 
         {mainSceneFeature && (
           <div
@@ -3319,7 +3413,7 @@ export function CinematicScreenExperience() {
               >
                 <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
                 <strong>فرع أبها</strong>
-                <small>صفحة الفرع</small>
+                <small>ابدأ الجولة</small>
               </button>
             </div>
           </div>
@@ -3327,14 +3421,11 @@ export function CinematicScreenExperience() {
       )}
 
       {openingComplete && branchView === "abha" && (
-        <section className="sd-abha-placeholder" aria-label="فرع أبها">
-          <button type="button" onClick={showBranchChoice} aria-label="العودة إلى اختيار الفرع">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M14 6l6 6-6 6" />
-            </svg>
-            <span>اختيار الفرع</span>
-          </button>
-        </section>
+        <AbhaTourExperience
+          onReturnToBranches={showBranchChoice}
+          cinematicEnabled={cinematicEnabled}
+          onCalibrationChange={handleLayoutEditingChange}
+        />
       )}
 
       {!openingComplete && (

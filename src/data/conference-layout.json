@@ -18,9 +18,12 @@
     "scale": 1
   },
   "reception:sd-conference-forward": {
-    "x": 52.48,
+    "x": 52.73,
     "y": 70,
-    "scale": 1
+    "scale": 1.2,
+    "angle": 0,
+    "tilt": 64,
+    "depth": 1
   },
   "main-reception:sd-main-reception-forward": {
     "x": 58.75,
@@ -368,6 +371,310 @@
     "scale": 1.6,
     "angle": 0,
     "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-01:abha-01-main-arrow": {
+    "x": 40.39,
+    "y": 63.85,
+    "scale": 1.1,
+    "angle": 11,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-01:abha-01-arrow-2": {
+    "x": 56.72,
+    "y": 61.8,
+    "scale": 0.7,
+    "angle": 59,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-02:abha-02-main-arrow": {
+    "x": 40.45,
+    "y": 68.93,
+    "scale": 1.2,
+    "angle": 33,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-02:abha-02-lounge-1": {
+    "x": 53.4,
+    "y": 66.1,
+    "scale": 0.8,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-03:abha-03-main-arrow": {
+    "x": 29.96,
+    "y": 72.77,
+    "scale": 1.5,
+    "angle": 39,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-03:abha-03-sterilization-1": {
+    "x": 13.19,
+    "y": 55.7,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-04:abha-04-main-arrow": {
+    "x": 29.95,
+    "y": 68.26,
+    "scale": 1.6,
+    "angle": -7,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-04:abha-04-reception-1": {
+    "x": 40.68,
+    "y": 51.53,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-04:abha-04-lounge-1": {
+    "x": 54.19,
+    "y": 57.63,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-05:abha-05-main-arrow": {
+    "x": 18.08,
+    "y": 87.8,
+    "scale": 1.9,
+    "angle": -54,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-05:abha-05-reception-1": {
+    "x": 34.54,
+    "y": 60.45,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-05:abha-05-clinic-1": {
+    "x": 35.37,
+    "y": 49.72,
+    "scale": 0.6,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-05:abha-05-clinic-2": {
+    "x": 43.88,
+    "y": 50.51,
+    "scale": 0.7,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-06:abha-06-main-arrow": {
+    "x": 39.85,
+    "y": 60.34,
+    "scale": 1.1,
+    "angle": -2,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-06:abha-06-arrow-2": {
+    "x": 70.64,
+    "y": 62.83,
+    "scale": 1.4,
+    "angle": 13,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-07:abha-07-main-arrow": {
+    "x": 46.11,
+    "y": 85.55,
+    "scale": 1.8,
+    "angle": -135,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-07:abha-07-clinic-1": {
+    "x": 60.52,
+    "y": 48.14,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-07:abha-07-clinic-2": {
+    "x": 71.13,
+    "y": 48.02,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-07:abha-07-reception-1": {
+    "x": 42.79,
+    "y": 58.65,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-08:abha-08-main-arrow": {
+    "x": 27.12,
+    "y": 55.37,
+    "scale": 1.3,
+    "angle": 70,
+    "tilt": 76,
+    "depth": 0.78
+  },
+  "abha-09:abha-09-main-arrow": {
+    "x": 52.25,
+    "y": 73.79,
+    "scale": 1.9,
+    "angle": -7,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-09:abha-09-lounge-1": {
+    "x": 41.89,
+    "y": 55.26,
+    "scale": 0.8,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-10:abha-10-main-arrow": {
+    "x": 13.26,
+    "y": 87.8,
+    "scale": 2.25,
+    "angle": -44,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-10:abha-10-reception-1": {
+    "x": 31.04,
+    "y": 56.05,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-10:abha-10-lounge-1": {
+    "x": 71.73,
+    "y": 71.19,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-10:abha-10-clinic-1": {
+    "x": 54.73,
+    "y": 45.53,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-10:abha-10-clinic-2": {
+    "x": 75.53,
+    "y": 44.29,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-01:abha-01-administration-1": {
+    "x": 79.08,
+    "y": 57.74,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-03:abha-03-clinic-1": {
+    "x": 61.05,
+    "y": 56.28,
+    "scale": 0.6,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-03:abha-03-clinic-2": {
+    "x": 83.54,
+    "y": 54.24,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-05:abha-05-administration-1": {
+    "x": 78.66,
+    "y": 44.75,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-06:abha-06-sterilization-1": {
+    "x": 11.75,
+    "y": 38.08,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-11:abha-11-main-arrow": {
+    "x": 31.16,
+    "y": 100,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-11:abha-11-reception-1": {
+    "x": 22.24,
+    "y": 64.86,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-11:abha-11-clinic-1": {
+    "x": 46.35,
+    "y": 46.67,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-11:abha-11-clinic-2": {
+    "x": 71.67,
+    "y": 48.25,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-11:abha-11-clinic-3": {
+    "x": 13.51,
+    "y": 48.81,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "prayer-corridor:sd-prayer-corridor-forward": {
+    "x": 46.42,
+    "y": 62.61,
+    "scale": 1.3,
+    "angle": 0,
+    "tilt": 68,
     "depth": 0.78
   }
 }
