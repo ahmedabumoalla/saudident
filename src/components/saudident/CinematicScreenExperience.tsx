@@ -2250,7 +2250,7 @@ export function CinematicScreenExperience() {
   return (
     <div
       ref={rootRef}
-      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}${cinematicEnabled ? " is-cinematic" : " is-cinematic-disabled"}${layoutEditing ? " is-calibrating" : ""}${chromeIdle && !layoutEditing ? " is-chrome-idle" : ""}`}
+      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}${cinematicEnabled ? " is-cinematic" : " is-cinematic-disabled"}${layoutEditing ? " is-calibrating" : ""}${branchTransitioning ? " is-branch-transitioning" : ""}${chromeIdle && !layoutEditing ? " is-chrome-idle" : ""}`}
       dir="rtl"
     >
       <div className="sd-screen-presentation__ambient" aria-hidden="true" />

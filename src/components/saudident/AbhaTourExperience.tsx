@@ -34,6 +34,9 @@ type AbhaTourExperienceProps = {
   onCalibrationChange?: (active: boolean) => void;
 };
 
+const INITIAL_CONTROLS_REVEAL_MS = 820;
+const SCENE_CONTROLS_REVEAL_MS = 180;
+
 const ITEM_KINDS: AbhaTourItemKind[] = [
   "arrow",
   "clinic",
@@ -122,11 +125,13 @@ export function AbhaTourExperience({
   const rootRef = useRef<HTMLDivElement>(null);
   const transitionRef = useRef<gsap.core.Timeline | null>(null);
   const transitionLockedRef = useRef(false);
+  const hasScheduledInitialRevealRef = useRef(false);
   const [sceneIndex, setSceneIndex] = useState(0);
   const [incomingSceneIndex, setIncomingSceneIndex] = useState<number | null>(null);
   const [items, setItems] = useState<AbhaTourOverlay[]>(() => savedAbhaTourLayout as AbhaTourOverlay[]);
   const [announcement, setAnnouncement] = useState("");
   const [transitioning, setTransitioning] = useState(false);
+  const [controlsReady, setControlsReady] = useState(false);
   const [coordinatesReady, setCoordinatesReady] = useState(false);
   const [calibrationActive, setCalibrationActive] = useState(process.env.NODE_ENV === "development");
   const scene = abhaTourScenes[sceneIndex];
@@ -152,6 +157,20 @@ export function AbhaTourExperience({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (transitioning) return;
+
+    const delay = !cinematicEnabled || calibrationActive || reducedMotion
+      ? 0
+      : hasScheduledInitialRevealRef.current
+        ? SCENE_CONTROLS_REVEAL_MS
+        : INITIAL_CONTROLS_REVEAL_MS;
+    hasScheduledInitialRevealRef.current = true;
+    const timer = window.setTimeout(() => setControlsReady(true), delay);
+    return () => window.clearTimeout(timer);
+  }, [calibrationActive, cinematicEnabled, sceneIndex, transitioning]);
+
   const goToScene = useCallback(async (index: number) => {
     if (transitionLockedRef.current) return;
     const targetIndex = (index + abhaTourScenes.length) % abhaTourScenes.length;
@@ -163,6 +182,7 @@ export function AbhaTourExperience({
 
     setAnnouncement("");
     transitionLockedRef.current = true;
+    setControlsReady(false);
     setTransitioning(true);
     transitionRef.current?.kill();
 
@@ -380,7 +400,7 @@ export function AbhaTourExperience({
   return (
     <div
       ref={rootRef}
-      className={`sd-abha-tour${cinematicEnabled ? " is-cinematic" : ""}${coordinatesReady ? " is-coordinate-ready" : ""}${calibrationActive ? " is-calibrating" : ""}${transitioning ? " is-transitioning" : ""}`}
+      className={`sd-abha-tour${cinematicEnabled ? " is-cinematic" : ""}${coordinatesReady ? " is-coordinate-ready" : ""}${calibrationActive ? " is-calibrating" : ""}${transitioning ? " is-transitioning" : ""}${controlsReady ? " are-controls-ready" : ""}`}
       role="region"
       aria-label="الجولة التفاعلية في فرع أبها"
     >

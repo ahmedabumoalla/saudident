@@ -3483,6 +3483,46 @@ video {
   to { opacity: var(--arrow-opacity, 1); filter: blur(0); scale: var(--sd-layout-scale, 1); }
 }
 
+.sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-image-coordinates,
+.sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-back,
+.sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-branch-choice-return,
+.sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-khamis-tour-pagination {
+  animation: sd-scene-controls-settle 320ms ease 180ms both;
+}
+
+.sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-image-coordinates,
+.sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-back,
+.sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-branch-choice-return,
+.sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-khamis-tour-pagination {
+  animation: none !important;
+  opacity: 0;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+@keyframes sd-scene-controls-settle {
+  from { opacity: 0; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+.sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour__controls,
+.sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour__pagination,
+.sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour__back,
+.sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour__home,
+.sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour__branch-return {
+  transition: opacity 320ms ease, filter 420ms ease;
+}
+
+.sd-abha-tour.is-cinematic:not(.is-calibrating):not(.are-controls-ready) .sd-abha-tour__controls,
+.sd-abha-tour.is-cinematic:not(.is-calibrating):not(.are-controls-ready) .sd-abha-tour__pagination,
+.sd-abha-tour.is-cinematic:not(.is-calibrating):not(.are-controls-ready) .sd-abha-tour__back,
+.sd-abha-tour.is-cinematic:not(.is-calibrating):not(.are-controls-ready) .sd-abha-tour__home,
+.sd-abha-tour.is-cinematic:not(.is-calibrating):not(.are-controls-ready) .sd-abha-tour__branch-return {
+  opacity: 0;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
 .sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-conference-image-coordinates > button:active,
 .sd-abha-tour.is-cinematic:not(.is-calibrating) .sd-abha-tour-control:active {
   filter: brightness(1.28) drop-shadow(0 0 14px rgba(81, 241, 164, 0.88));
@@ -9588,5 +9628,20 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   .sd-screen-presentation__blank.is-scene-transitioning::before,
   .sd-screen-presentation__blank.is-scene-transitioning::after {
     animation: none !important;
+  }
+
+  .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-conference-image-coordinates,
+  .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-conference-back,
+  .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-branch-choice-return,
+  .sd-screen-presentation.is-cinematic .sd-khamis-tour-pagination {
+    animation: none !important;
+  }
+
+  .sd-abha-tour.is-cinematic .sd-abha-tour__controls,
+  .sd-abha-tour.is-cinematic .sd-abha-tour__pagination,
+  .sd-abha-tour.is-cinematic .sd-abha-tour__back,
+  .sd-abha-tour.is-cinematic .sd-abha-tour__home,
+  .sd-abha-tour.is-cinematic .sd-abha-tour__branch-return {
+    transition-duration: 0.01ms !important;
   }
 }
