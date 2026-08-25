@@ -1,12 +1,15 @@
 {
   "hall:sd-conference-floor-arrow--far": {
-    "x": 69,
-    "y": 71.38,
-    "scale": 1.2
+    "x": 69.58,
+    "y": 73.34,
+    "scale": 1.2,
+    "angle": 90,
+    "tilt": 70,
+    "depth": 0.78
   },
   "hall:sd-conference-floor-arrow--near": {
     "x": 41,
-    "y": 64.1,
+    "y": 65.19,
     "scale": 1.2,
     "angle": -90,
     "tilt": 70,
@@ -41,22 +44,25 @@
     "scale": 1
   },
   "clinic-corridor:sd-clinic-corridor-forward": {
-    "x": 44.5,
-    "y": 57.15,
-    "scale": 1
+    "x": 48.49,
+    "y": 59.1,
+    "scale": 1.4,
+    "angle": -90,
+    "tilt": 68,
+    "depth": 0.78
   },
   "clinic-corridor:sd-corridor-hotspot--sterilization": {
-    "x": 55.68,
-    "y": 39.25,
-    "scale": 0.9,
+    "x": 55.26,
+    "y": 47.73,
+    "scale": 0.7,
     "angle": 0,
     "tilt": 70,
     "depth": 0.78
   },
   "clinic-corridor:sd-corridor-hotspot--clinic-mid": {
-    "x": 59.62,
-    "y": 48.39,
-    "scale": 0.8,
+    "x": 59.41,
+    "y": 48.28,
+    "scale": 0.6,
     "angle": 0,
     "tilt": 70,
     "depth": 0.78
@@ -72,9 +78,12 @@
     "scale": 0.8
   },
   "clinic-corridor:sd-corridor-hotspot--clinic-far": {
-    "x": 43.38,
-    "y": 50.43,
-    "scale": 1
+    "x": 43.01,
+    "y": 43.36,
+    "scale": 0.8,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
   },
   "prayer-corridor:sd-prayer-corridor-hotspot--meeting": {
     "x": 34.6,

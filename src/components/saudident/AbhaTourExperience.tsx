@@ -323,7 +323,7 @@ export function AbhaTourExperience({
     return (
       <div
         className={`sd-abha-tour__media sd-abha-tour__media--${layer}`}
-        key={layerScene.id}
+        key={`${layer}-${layerScene.id}`}
         aria-hidden={isIncoming || undefined}
       >
         <Image
