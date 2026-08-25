@@ -246,7 +246,7 @@ export function CinematicScreenExperience() {
       clipPath: "inset(8% 8% 8% 8% round 36px)",
     });
     gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
-      .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-khamis), .sd-branch-choice__masthead"), {
+      .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-khamis)"), {
         autoAlpha: 0,
         y: -18,
         duration: 0.42,
@@ -281,7 +281,7 @@ export function CinematicScreenExperience() {
     }
 
     gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
-      .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-abha), .sd-branch-choice__masthead"), {
+      .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-abha)"), {
         autoAlpha: 0,
         y: -18,
         duration: 0.42,
@@ -2137,9 +2137,8 @@ export function CinematicScreenExperience() {
     const portraits = Array.from(root.querySelectorAll<HTMLElement>(".sd-screen-opening__doctor"));
     const doctorInfo = Array.from(root.querySelectorAll<HTMLElement>(".sd-screen-opening__doctor-info"));
     const finalCopy = root.querySelector<HTMLElement>(".sd-screen-opening__final");
-    const letterboxBars = Array.from(root.querySelectorAll<HTMLElement>(".sd-screen-opening__letterbox"));
     const openingGlow = root.querySelector<HTMLElement>(".sd-screen-opening__glow");
-    if (!opening || !blank || !firstCopy || !secondCopy || !finalCopy || !openingGlow || letterboxBars.length !== 2) return;
+    if (!opening || !blank || !firstCopy || !secondCopy || !finalCopy || !openingGlow) return;
 
     const openingTargets = [firstCopy, secondCopy, finalCopy, ...portraits, ...doctorInfo];
     const revealOrder = [portraits[1], portraits[0], portraits[2]].filter(
@@ -2184,13 +2183,11 @@ export function CinematicScreenExperience() {
 
     gsap.set(blank, { autoAlpha: 0 });
     gsap.set(openingTargets, { autoAlpha: 0 });
-    gsap.set(letterboxBars, { scaleY: 1 });
     gsap.set(openingGlow, { autoAlpha: 0, xPercent: 75 });
 
     const timeline = gsap.timeline({ defaults: { ease: "power3.out" }, onComplete: finish });
     timelineRef.current = timeline;
     timeline
-      .to(letterboxBars, { scaleY: 0.12, duration: 1.8, ease: "expo.inOut" }, 0)
       .fromTo(firstCopy,
         { autoAlpha: 0, y: 20, clipPath: "inset(100% 0% 0% 0%)" },
         { autoAlpha: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)", duration: 1.45 },
@@ -2203,7 +2200,6 @@ export function CinematicScreenExperience() {
         2.3,
       )
       .to(secondCopy, { autoAlpha: 0, y: -14, duration: 0.8, ease: "power2.inOut" }, 3.75)
-      .to(letterboxBars, { scaleY: 0, duration: 1.35, ease: "expo.inOut" }, 3.72)
       .fromTo(openingGlow,
         { autoAlpha: 0, xPercent: 75 },
         { autoAlpha: 0.76, xPercent: -75, duration: 1.55, ease: "power2.inOut" },
@@ -3494,7 +3490,6 @@ export function CinematicScreenExperience() {
       {openingComplete && branchView === "choice" && (
         <section className="sd-branch-choice" aria-labelledby="sd-branch-choice-title">
           <div className="sd-branch-choice__panel">
-            <div className="sd-branch-choice__masthead">
             <Image
               className="sd-branch-choice__logo"
               src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
@@ -3507,9 +3502,6 @@ export function CinematicScreenExperience() {
             <p>الجولة التفاعلية</p>
             <h1 id="sd-branch-choice-title">اختر الفرع</h1>
 
-              <span className="sd-branch-choice__count" aria-hidden="true">02 / 01</span>
-            </div>
-
             <div className="sd-branch-choice__options">
               <button
                 type="button"
@@ -3517,17 +3509,6 @@ export function CinematicScreenExperience() {
                 onClick={openKhamisBranch}
                 disabled={branchTransitioning}
               >
-                <Image
-                  className="sd-branch-choice__visual"
-                  src="/assets/branches/khamis-mushait/branch-hero.webp"
-                  alt=""
-                  width={1600}
-                  height={900}
-                  sizes="(max-width: 767px) 100vw, 50vw"
-                  priority
-                />
-                <span className="sd-branch-choice__shade" aria-hidden="true" />
-                <span className="sd-branch-choice__number" aria-hidden="true">01</span>
                 <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
                 <strong>فرع خميس مشيط</strong>
                 <small>ابدأ الجولة</small>
@@ -3539,17 +3520,6 @@ export function CinematicScreenExperience() {
                 onClick={openAbhaBranch}
                 disabled={branchTransitioning}
               >
-                <Image
-                  className="sd-branch-choice__visual"
-                  src="/assets/branches/abha/branch-hero.webp"
-                  alt=""
-                  width={1600}
-                  height={900}
-                  sizes="(max-width: 767px) 100vw, 50vw"
-                  priority
-                />
-                <span className="sd-branch-choice__shade" aria-hidden="true" />
-                <span className="sd-branch-choice__number" aria-hidden="true">02</span>
                 <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
                 <strong>فرع أبها</strong>
                 <small>ابدأ الجولة</small>
@@ -3570,8 +3540,6 @@ export function CinematicScreenExperience() {
       {!openingComplete && (
         <section className="sd-screen-opening" aria-label="افتتاحية سعودي دنت">
           <div className="sd-screen-opening__glow" aria-hidden="true" />
-          <div className="sd-screen-opening__letterbox sd-screen-opening__letterbox--top" aria-hidden="true" />
-          <div className="sd-screen-opening__letterbox sd-screen-opening__letterbox--bottom" aria-hidden="true" />
           <div className="sd-screen-opening__copy">
             <p className="sd-screen-opening__line sd-screen-opening__line--first">
               الابتسامة لا تبدأ من الأسنان
