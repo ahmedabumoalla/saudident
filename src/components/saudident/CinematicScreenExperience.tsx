@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Bone, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { Armchair, Bone, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, Maximize2, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AbhaTourExperience } from "@/components/saudident/AbhaTourExperience";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
@@ -153,6 +153,8 @@ export function CinematicScreenExperience() {
   const [mainSceneFeature, setMainSceneFeature] = useState<MainSceneFeature | null>(null);
   const [layoutEditing, setLayoutEditing] = useState(false);
   const [chromeIdle, setChromeIdle] = useState(false);
+  const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const activeXrayThirdFeature = isXrayThirdFeature(mainSceneFeature) ? xrayThirdFeatures[mainSceneFeature] : null;
   const activeXrayFourthFeature = isXrayFourthFeature(mainSceneFeature) ? xrayFourthFeatures[mainSceneFeature] : null;
   const activeXrayFifthFeature = isXrayFifthFeature(mainSceneFeature) ? xrayFifthFeatures[mainSceneFeature] : null;
@@ -167,6 +169,32 @@ export function CinematicScreenExperience() {
   const handleLayoutEditingChange = useCallback((active: boolean) => {
     setLayoutEditing(active);
     setChromeIdle(false);
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreenState = () => {
+      setFullscreenAvailable(Boolean(document.fullscreenEnabled && rootRef.current?.requestFullscreen));
+      setIsFullscreen(document.fullscreenElement === rootRef.current);
+    };
+
+    syncFullscreenState();
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    const root = rootRef.current;
+    if (!root || !document.fullscreenEnabled) return;
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await root.requestFullscreen({ navigationUI: "hide" });
+      }
+    } catch (error) {
+      console.error("تعذر تغيير وضع ملء الشاشة", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -2255,6 +2283,21 @@ export function CinematicScreenExperience() {
     >
       <div className="sd-screen-presentation__ambient" aria-hidden="true" />
       <div className="sd-cinematic-texture" aria-hidden="true" />
+
+      {fullscreenAvailable && (
+        <button
+          type="button"
+          className="sd-fullscreen-control"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={() => void toggleFullscreen()}
+          aria-label={isFullscreen ? "إنهاء عرض ملء الشاشة" : "عرض المنصة بملء الشاشة"}
+          aria-pressed={isFullscreen}
+          title={isFullscreen ? "إنهاء ملء الشاشة" : "عرض بملء الشاشة"}
+        >
+          {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+          <span>{isFullscreen ? "إنهاء ملء الشاشة" : "ملء الشاشة"}</span>
+        </button>
+      )}
 
       <header className="sd-screen-presentation__brand">
         <span className="sd-screen-presentation__brand-logo">
