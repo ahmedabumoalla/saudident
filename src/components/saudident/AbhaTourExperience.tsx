@@ -128,6 +128,7 @@ export function AbhaTourExperience({
   const transitionRef = useRef<gsap.core.Timeline | null>(null);
   const transitionLockedRef = useRef(false);
   const hasScheduledInitialRevealRef = useRef(false);
+  const navigationHistoryRef = useRef<number[]>([]);
   const [sceneIndex, setSceneIndex] = useState(0);
   const [incomingSceneIndex, setIncomingSceneIndex] = useState<number | null>(null);
   const [items, setItems] = useState<AbhaTourOverlay[]>(() => savedAbhaTourLayout as AbhaTourOverlay[]);
@@ -176,10 +177,11 @@ export function AbhaTourExperience({
     return () => window.clearTimeout(timer);
   }, [calibrationActive, cinematicEnabled, sceneIndex, transitioning]);
 
-  const goToScene = useCallback(async (index: number) => {
+  const goToScene = useCallback(async (index: number, recordHistory = true) => {
     if (transitionLockedRef.current) return;
     const targetIndex = (index + abhaTourScenes.length) % abhaTourScenes.length;
     if (targetIndex === sceneIndex) return;
+    if (recordHistory) navigationHistoryRef.current.push(sceneIndex);
     const direction = targetIndex === 0 && sceneIndex === abhaTourScenes.length - 1
       ? 1
       : targetIndex > sceneIndex ? 1 : -1;
@@ -261,6 +263,13 @@ export function AbhaTourExperience({
       });
     });
   }, [calibrationActive, cinematicEnabled, sceneIndex]);
+
+  const returnToPreviousScene = useCallback(() => {
+    const history = navigationHistoryRef.current;
+    const historyTarget = history.length > 0 ? history.pop() : undefined;
+    const targetIndex = historyTarget ?? sceneIndex - 1;
+    void goToScene(targetIndex, false);
+  }, [goToScene, sceneIndex]);
 
   useEffect(() => {
     const nextIndex = (sceneIndex + 1) % abhaTourScenes.length;
@@ -459,7 +468,7 @@ export function AbhaTourExperience({
         <button
           type="button"
           className="sd-conference-back sd-abha-tour__back"
-          onClick={() => goToScene(sceneIndex - 1)}
+          onClick={returnToPreviousScene}
           disabled={transitioning}
           aria-label="العودة إلى الصورة السابقة"
         >

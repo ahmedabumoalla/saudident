@@ -69,7 +69,8 @@
     "angle": 0,
     "tilt": 70,
     "depth": 0.78,
-    "required": true
+    "required": true,
+    "targetSceneNumber": 8
   },
   {
     "id": "abha-07-main-arrow",
