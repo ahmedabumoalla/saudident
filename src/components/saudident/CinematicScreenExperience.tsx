@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Bone, Braces, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, Maximize2, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { Armchair, Building2, Calculator, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, House, Maximize2, Megaphone, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AbhaTourExperience } from "@/components/saudident/AbhaTourExperience";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
-import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
+import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, marketingDepartmentFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
@@ -68,6 +68,7 @@ type MainSceneFeature =
   | "xray-clinic"
   | "women-lounge"
   | "administrative-office"
+  | "marketing-department"
   | "left-reception-desk"
   | "next-clinic-left"
   | "next-clinic-center"
@@ -136,6 +137,27 @@ function FloorRouteGuide() {
   );
 }
 
+function DentalImplantIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path
+        d="M7.2 4.7c0-1.25 1.02-2.27 2.27-2.27h5.06c1.25 0 2.27 1.02 2.27 2.27v1.65c0 1.4-1.14 2.54-2.54 2.54H9.74A2.54 2.54 0 0 1 7.2 6.35Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.75 8.9h4.5l-.85 9.18L12 21.55l-1.4-3.47Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9.9 11.2h4.2M10.1 13.45h3.8M10.3 15.7h3.4M10.52 17.95h2.96" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function CinematicScreenExperience() {
   const cinematicEnabled = useSyncExternalStore(subscribeToCinematicRequest, isCinematicRequested, () => true);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -165,11 +187,41 @@ export function CinematicScreenExperience() {
   const activeReceptionRightCorridorFeature = isReceptionRightCorridorFeature(mainSceneFeature) ? receptionRightCorridorFeatures[mainSceneFeature] : null;
   const activeReceptionRightLobbyFeature = isReceptionRightLobbyFeature(mainSceneFeature) ? receptionRightLobbyFeatures[mainSceneFeature] : null;
   const khamisSceneCounter = getKhamisSceneCounter(activeScene);
+  const khamisPaginationScenes = KHAMIS_LEFT_SECTION.includes(activeScene)
+    ? KHAMIS_LEFT_SECTION
+    : KHAMIS_RIGHT_SECTION.includes(activeScene)
+      ? KHAMIS_RIGHT_SECTION
+      : null;
 
   const handleLayoutEditingChange = useCallback((active: boolean) => {
     setLayoutEditing(active);
     setChromeIdle(false);
   }, []);
+
+  const jumpToKhamisScene = useCallback((destination: ConferenceScene) => {
+    if (sceneTransitioning || destination === activeScene) return;
+
+    const root = rootRef.current;
+    const scenes = root
+      ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-scene"))
+      : [];
+    const destinationScene = root?.querySelector<HTMLElement>(`.sd-conference-scene--${destination}`);
+    const transitionLight = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    if (!destinationScene) return;
+
+    sceneTimelineRef.current?.kill();
+    gsap.set(scenes, {
+      autoAlpha: 0,
+      xPercent: 0,
+      yPercent: 0,
+      scale: 1,
+      filter: "blur(0px)",
+    });
+    gsap.set(destinationScene, { autoAlpha: 1 });
+    if (transitionLight) gsap.set(transitionLight, { autoAlpha: 0 });
+    setMainSceneFeature(null);
+    setActiveScene(destination);
+  }, [activeScene, sceneTransitioning]);
 
   useEffect(() => {
     const syncFullscreenState = () => {
@@ -2339,20 +2391,36 @@ export function CinematicScreenExperience() {
         <div className="sd-conference-scene sd-conference-scene--khamis-lobby-side" aria-hidden="true" />
         <div className="sd-conference-scene-transition" aria-hidden="true" />
 
-        {branchView === "khamis" && khamisSceneCounter && (
-          <div
-            className="sd-tour-pagination sd-khamis-tour-pagination"
-            role="status"
-            aria-label={`الصورة ${khamisSceneCounter.current} من ${khamisSceneCounter.total}`}
+        {branchView === "khamis" && activeScene !== "hall" && (
+          <button
+            type="button"
+            className="sd-khamis-tour__home"
+            onClick={() => jumpToKhamisScene("hall")}
+            disabled={sceneTransitioning}
+            aria-label="العودة إلى الصورة الأولى في فرع خميس مشيط"
           >
-            {Array.from({ length: khamisSceneCounter.total }, (_, index) => (
-              <span
-                key={index}
-                className={index === khamisSceneCounter.current - 1 ? "is-active" : undefined}
-                aria-hidden="true"
+            <House aria-hidden="true" />
+            <span>الرئيسية</span>
+          </button>
+        )}
+
+        {branchView === "khamis" && khamisSceneCounter && khamisPaginationScenes && (
+          <nav
+            className="sd-tour-pagination sd-khamis-tour-pagination"
+            aria-label={`صور الجولة، الصورة الحالية ${khamisSceneCounter.current} من ${khamisSceneCounter.total}`}
+          >
+            {khamisPaginationScenes.map((scene, index) => (
+              <button
+                key={scene}
+                type="button"
+                className={scene === activeScene ? "is-active" : undefined}
+                onClick={() => jumpToKhamisScene(scene)}
+                disabled={sceneTransitioning}
+                aria-label={`الانتقال إلى الصورة ${index + 1}`}
+                aria-current={scene === activeScene ? "true" : undefined}
               />
             ))}
-          </div>
+          </nav>
         )}
 
         {branchView === "khamis" && activeScene === "hall" && (
@@ -2361,10 +2429,10 @@ export function CinematicScreenExperience() {
             className="sd-branch-choice-return"
             onClick={showBranchChoice}
             disabled={sceneTransitioning}
-            aria-label="العودة إلى اختيار الفرع"
+            aria-label="الرجوع لاختيار الفرع"
           >
             <Building2 aria-hidden="true" />
-            <span>اختيار الفرع</span>
+            <span>الرجوع لاختيار الفرع</span>
           </button>
         )}
 
@@ -2378,7 +2446,6 @@ export function CinematicScreenExperience() {
             aria-label="الانتقال إلى اليمين"
           >
             <FloorRouteGuide />
-            <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
           </button>
 
           <button
@@ -2442,7 +2509,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "left-lobby" && (
-          <div className="sd-left-lobby-controls sd-conference-image-coordinates" aria-label="اتجاه الردهة والمكتب الإداري">
+          <div className="sd-left-lobby-controls sd-conference-image-coordinates" aria-label="اتجاه الردهة وقسما المحاسبة والتسويق">
             <button
               type="button"
               className="sd-conference-floor-arrow sd-left-lobby-forward"
@@ -2451,7 +2518,6 @@ export function CinematicScreenExperience() {
               aria-label="الانتقال إلى الاستقبال"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             <button
@@ -2461,8 +2527,19 @@ export function CinematicScreenExperience() {
               aria-label={administrativeOfficeFeature.ariaLabel}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Building2 aria-hidden="true" /></span>
+              <span className="sd-corridor-hotspot__icon"><Calculator aria-hidden="true" /></span>
               <strong>{administrativeOfficeFeature.shortLabel}</strong>
+            </button>
+
+            <button
+              type="button"
+              className="sd-corridor-hotspot sd-left-lobby-hotspot--marketing"
+              onClick={() => setMainSceneFeature("marketing-department")}
+              aria-label={marketingDepartmentFeature.ariaLabel}
+            >
+              <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
+              <span className="sd-corridor-hotspot__icon"><Megaphone aria-hidden="true" /></span>
+              <strong>{marketingDepartmentFeature.shortLabel}</strong>
             </button>
           </div>
         )}
@@ -2477,7 +2554,6 @@ export function CinematicScreenExperience() {
               aria-label="الانتقال إلى صالة الاستقبال"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             <button
@@ -2503,7 +2579,6 @@ export function CinematicScreenExperience() {
               aria-label="الانتقال إلى ممر وحدة زراعة الأسنان"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             <button
@@ -2514,7 +2589,6 @@ export function CinematicScreenExperience() {
               aria-label="الانتقال إلى الممر الأيمن"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             {(Object.entries(receptionHallFeatures) as [ReceptionHallFeatureId, (typeof receptionHallFeatures)[ReceptionHallFeatureId]][]).map(([featureId, feature]) => (
@@ -2544,7 +2618,7 @@ export function CinematicScreenExperience() {
               <button
                 key={featureId}
                 type="button"
-                className={`sd-corridor-hotspot sd-implant-corridor-hotspot--${feature.icon}`}
+                className={`sd-corridor-hotspot sd-implant-corridor-hotspot--${featureId === "implant-corridor-clinic-right" ? "clinic-right" : feature.icon}`}
                 onClick={feature.icon === "implant" ? openImplantUnitLobby : () => setMainSceneFeature(featureId)}
                 disabled={sceneTransitioning}
                 aria-label={feature.icon === "implant" ? "الانتقال إلى وحدة زراعة الأسنان" : feature.ariaLabel}
@@ -2552,7 +2626,7 @@ export function CinematicScreenExperience() {
                 <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
                 <span className="sd-corridor-hotspot__icon">
                   {feature.icon === "clinic" && <Stethoscope aria-hidden="true" />}
-                  {feature.icon === "implant" && <Bone aria-hidden="true" />}
+                  {feature.icon === "implant" && <DentalImplantIcon />}
                 </span>
                 <strong>{feature.shortLabel}</strong>
               </button>
@@ -2579,6 +2653,16 @@ export function CinematicScreenExperience() {
                 <strong>{feature.shortLabel}</strong>
               </button>
             ))}
+
+            <button
+              type="button"
+              className="sd-implant-unit-lobby-return-to-hall"
+              onClick={() => jumpToKhamisScene("reception-hall")}
+              disabled={sceneTransitioning}
+              aria-label="الرجوع إلى صالة الاستقبال وعلاقات المرضى"
+            >
+              <FloorRouteGuide />
+            </button>
           </div>
         )}
 
@@ -2592,7 +2676,6 @@ export function CinematicScreenExperience() {
               aria-label="الانتقال إلى صالة الممر"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             {(Object.entries(receptionRightCorridorFeatures) as [ReceptionRightCorridorFeatureId, (typeof receptionRightCorridorFeatures)[ReceptionRightCorridorFeatureId]][]).map(([featureId, feature]) => (
@@ -2630,6 +2713,16 @@ export function CinematicScreenExperience() {
                 <strong>{feature.shortLabel}</strong>
               </button>
             ))}
+
+            <button
+              type="button"
+              className="sd-reception-right-lobby-return-to-hall"
+              onClick={() => jumpToKhamisScene("reception-hall")}
+              disabled={sceneTransitioning}
+              aria-label="الرجوع إلى صالة الاستقبال وعلاقات المرضى"
+            >
+              <FloorRouteGuide />
+            </button>
           </div>
         )}
 
@@ -2645,7 +2738,7 @@ export function CinematicScreenExperience() {
               <span className="sd-patient-relations-hotspot__icon">
                 <HeartHandshake aria-hidden="true" />
               </span>
-              <strong>علاقات المرضى</strong>
+              <strong>المدير الطبي</strong>
             </button>
 
             <button
@@ -2656,7 +2749,6 @@ export function CinematicScreenExperience() {
               aria-label="التقدم إلى المشهد التالي"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
           </div>
         )}
@@ -2758,7 +2850,7 @@ export function CinematicScreenExperience() {
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
               <span className="sd-corridor-hotspot__icon"><Wrench aria-hidden="true" /></span>
-              <strong>إدارة الأجهزة</strong>
+              <strong>قسم تقنية المعلومات</strong>
             </button>
 
             <button
@@ -2769,7 +2861,7 @@ export function CinematicScreenExperience() {
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
               <span className="sd-corridor-hotspot__icon"><ShieldCheck aria-hidden="true" /></span>
-              <strong>التعقيم</strong>
+              <strong>التعقيم المركزي</strong>
             </button>
 
             <button
@@ -2987,7 +3079,6 @@ export function CinematicScreenExperience() {
               aria-label="متابعة الجولة إلى الصورة التالية"
             >
               <FloorRouteGuide />
-              <span className="sd-floor-route__label" aria-hidden="true">تابع المسار</span>
             </button>
 
             <button
@@ -3004,7 +3095,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "xray-corridor-fifth" && (
-          <div className="sd-xray-fifth-controls sd-conference-image-coordinates" aria-label="نقاط عيادات التقويم والفحص الأولي">
+          <div className="sd-xray-fifth-controls sd-conference-image-coordinates" aria-label="نقاط العيادات والفحص الأولي">
             <button
               type="button"
               className="sd-corridor-hotspot sd-xray-fifth-hotspot--orthodontics-left"
@@ -3012,7 +3103,7 @@ export function CinematicScreenExperience() {
               aria-label={xrayFifthFeatures["fifth-orthodontics-left"].ariaLabel}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Braces aria-hidden="true" /></span>
+              <span className="sd-corridor-hotspot__icon"><Stethoscope aria-hidden="true" /></span>
               <strong>{xrayFifthFeatures["fifth-orthodontics-left"].shortLabel}</strong>
             </button>
 
@@ -3023,7 +3114,7 @@ export function CinematicScreenExperience() {
               aria-label={xrayFifthFeatures["fifth-orthodontics-center"].ariaLabel}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Braces aria-hidden="true" /></span>
+              <span className="sd-corridor-hotspot__icon"><Stethoscope aria-hidden="true" /></span>
               <strong>{xrayFifthFeatures["fifth-orthodontics-center"].shortLabel}</strong>
             </button>
 
@@ -3034,7 +3125,7 @@ export function CinematicScreenExperience() {
               aria-label={xrayFifthFeatures["fifth-orthodontics-right"].ariaLabel}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Braces aria-hidden="true" /></span>
+              <span className="sd-corridor-hotspot__icon"><Stethoscope aria-hidden="true" /></span>
               <strong>{xrayFifthFeatures["fifth-orthodontics-right"].shortLabel}</strong>
             </button>
 
@@ -3047,6 +3138,17 @@ export function CinematicScreenExperience() {
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
               <span className="sd-corridor-hotspot__icon"><ClipboardCheck aria-hidden="true" /></span>
               <strong>{xrayFifthFeatures["fifth-preliminary-exam"].shortLabel}</strong>
+            </button>
+
+            <button
+              type="button"
+              className="sd-xray-fifth-return"
+              onClick={returnToFourthXrayCorridor}
+              disabled={sceneTransitioning}
+              aria-label="الرجوع إلى الصورة السابقة"
+            >
+              <FloorRouteGuide />
+              <span className="sd-floor-route__label" aria-hidden="true">رجوع</span>
             </button>
           </div>
         )}
@@ -3201,7 +3303,8 @@ export function CinematicScreenExperience() {
                 {mainSceneFeature === "central-radiology" && <Radiation />}
                 {mainSceneFeature === "xray-clinic" && <Stethoscope />}
                 {mainSceneFeature === "women-lounge" && <Armchair />}
-                {mainSceneFeature === "administrative-office" && <Building2 />}
+                {mainSceneFeature === "administrative-office" && <Calculator />}
+                {mainSceneFeature === "marketing-department" && <Megaphone />}
                 {mainSceneFeature === "left-reception-desk" && <CalendarCheck2 />}
                 {(mainSceneFeature === "next-clinic-left" ||
                   mainSceneFeature === "next-clinic-center" ||
@@ -3209,7 +3312,7 @@ export function CinematicScreenExperience() {
                 {activeXrayThirdFeature?.icon === "lounge" && <Armchair />}
                 {activeXrayThirdFeature?.icon === "clinic" && <Stethoscope />}
                 {activeXrayFourthFeature && <Headphones />}
-                {activeXrayFifthFeature?.icon === "orthodontics" && <Braces />}
+                {activeXrayFifthFeature?.icon === "orthodontics" && <Stethoscope />}
                 {activeXrayFifthFeature?.icon === "exam" && <ClipboardCheck />}
                 {activeKhamisLobbySideFeature?.icon === "lounge" && <Armchair />}
                 {activeReceptionHallFeature?.icon === "reception" && <CalendarCheck2 />}
@@ -3217,7 +3320,7 @@ export function CinematicScreenExperience() {
                 {activeReceptionHallFeature?.icon === "lounge" && <Armchair />}
                 {activeReceptionHallFeature?.icon === "clinic" && <Stethoscope />}
                 {activeImplantCorridorFeature?.icon === "clinic" && <Stethoscope />}
-                {activeImplantCorridorFeature?.icon === "implant" && <Bone />}
+                {activeImplantCorridorFeature?.icon === "implant" && <DentalImplantIcon />}
                 {activeImplantUnitLobbyFeature?.icon === "clinic" && <Stethoscope />}
                 {activeImplantUnitLobbyFeature?.icon === "reception" && <CalendarCheck2 />}
                 {activeImplantUnitLobbyFeature?.icon === "lounge" && <Armchair />}
@@ -3247,6 +3350,14 @@ export function CinematicScreenExperience() {
                   <p className="sd-main-feature__eyebrow">{administrativeOfficeFeature.eyebrow}</p>
                   <h2 id="sd-main-feature-title">{administrativeOfficeFeature.title}</h2>
                   <p className="sd-main-feature__message">{administrativeOfficeFeature.message}</p>
+                </>
+              )}
+
+              {mainSceneFeature === "marketing-department" && (
+                <>
+                  <p className="sd-main-feature__eyebrow">{marketingDepartmentFeature.eyebrow}</p>
+                  <h2 id="sd-main-feature-title">{marketingDepartmentFeature.title}</h2>
+                  <p className="sd-main-feature__message">{marketingDepartmentFeature.message}</p>
                 </>
               )}
 
@@ -3515,16 +3626,16 @@ export function CinematicScreenExperience() {
               />
 
               <div className="sd-patient-relations__symbol" aria-hidden="true">
-                <HeartHandshake />
+                <Stethoscope />
               </div>
 
-              <p className="sd-patient-relations__eyebrow">هنا يبدأ الاهتمام</p>
-              <h2 id="sd-patient-relations-title">صوتك مسموع… ورحلتك تهمّنا</h2>
+              <p className="sd-patient-relations__eyebrow">قيادة طبية بمعايير سعودي دنت</p>
+              <h2 id="sd-patient-relations-title">خبرة تقود الرعاية وثقة تصنع الابتسامة</h2>
               <p className="sd-patient-relations__message">
-                لأن تجربتك معنا تبدأ قبل العلاج وتستمر بعده، وُجدت علاقات المرضى لتكون صوتك الأقرب؛
-                نستمع لك، نتابع تجربتك، ونضمن أن تصل ملاحظتك باهتمام وخصوصية تليق بثقتك
+                يقود المدير الطبي في سعودي دنت منظومة علاجية تضع سلامتك وجودة رعايتك في المقام الأول
+                ويشرف على أدق التفاصيل ويوحّد معايير الجودة لنقدّم لك رعاية تليق بثقتك
               </p>
-              <span className="sd-patient-relations__signature">علاقات المرضى — بالقرب منك دائمًا</span>
+              <span className="sd-patient-relations__signature">المدير الطبي — جودة نلتزم بها وابتسامة نفخر بها</span>
             </article>
           </div>
         )}
@@ -3552,6 +3663,14 @@ export function CinematicScreenExperience() {
                 onClick={openKhamisBranch}
                 disabled={branchTransitioning}
               >
+                <Image
+                  className="sd-branch-choice__photo"
+                  src="/assets/branches/khamis-mushait/exterior-wide.webp"
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  aria-hidden="true"
+                />
                 <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
                 <strong>فرع خميس مشيط</strong>
                 <small>ابدأ الجولة</small>
@@ -3563,6 +3682,14 @@ export function CinematicScreenExperience() {
                 onClick={openAbhaBranch}
                 disabled={branchTransitioning}
               >
+                <Image
+                  className="sd-branch-choice__photo"
+                  src="/assets/branches/abha/exterior-sultan-al-sadami.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  aria-hidden="true"
+                />
                 <span className="sd-branch-choice__icon"><Building2 aria-hidden="true" /></span>
                 <strong>فرع أبها</strong>
                 <small>ابدأ الجولة</small>

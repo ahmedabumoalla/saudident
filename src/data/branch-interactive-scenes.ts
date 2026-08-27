@@ -213,7 +213,7 @@ export const branchInteractiveExperiences: Record<BranchSceneId, BranchInteracti
             y: 55,
             size: 42,
             label: "غرفة تعقيم",
-            eyebrow: "التعقيم",
+            eyebrow: "التعقيم المركزي",
             title: "غرفة تعقيم",
             description: "لأن الأمان لا يقبل أنصاف الحلول؛ كل أداة تمر بمنظومة تعقيم دقيقة، لتبدأ رعايتك بثقة تليق بابتسامتك",
             services: [],

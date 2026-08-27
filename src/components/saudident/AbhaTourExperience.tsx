@@ -12,6 +12,7 @@ import {
   Radiation,
   ShieldCheck,
   Stethoscope,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import {
@@ -23,6 +24,7 @@ import savedConferenceLayout from "@/data/conference-layout.json";
 import {
   abhaTourItemLabels,
   abhaTourScenes,
+  getAbhaTourItemContent,
   type AbhaTourItemKind,
   type AbhaTourOverlay,
 } from "@/data/abha-tour";
@@ -130,11 +132,14 @@ export function AbhaTourExperience({
   const [incomingSceneIndex, setIncomingSceneIndex] = useState<number | null>(null);
   const [items, setItems] = useState<AbhaTourOverlay[]>(() => savedAbhaTourLayout as AbhaTourOverlay[]);
   const [announcement, setAnnouncement] = useState("");
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [controlsReady, setControlsReady] = useState(false);
   const [coordinatesReady, setCoordinatesReady] = useState(false);
   const [calibrationActive, setCalibrationActive] = useState(process.env.NODE_ENV === "development");
   const scene = abhaTourScenes[sceneIndex];
+  const activeItem = activeItemId ? items.find((item) => item.id === activeItemId) ?? null : null;
+  const activeItemContent = activeItem ? getAbhaTourItemContent(activeItem) : null;
 
   useLayoutEffect(() => {
     const player = rootRef.current;
@@ -181,6 +186,7 @@ export function AbhaTourExperience({
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     setAnnouncement("");
+    setActiveItemId(null);
     transitionLockedRef.current = true;
     setControlsReady(false);
     setTransitioning(true);
@@ -273,10 +279,20 @@ export function AbhaTourExperience({
     transitionRef.current?.kill();
   }, []);
 
+  useEffect(() => {
+    if (!activeItemId) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveItemId(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [activeItemId]);
+
   const handleEditingChange = useCallback((active: boolean) => {
     setCalibrationActive(active);
     onCalibrationChange?.(active);
     if (!active) return;
+    setActiveItemId(null);
     transitionRef.current?.kill();
     transitionLockedRef.current = false;
     setIncomingSceneIndex(null);
@@ -382,10 +398,13 @@ export function AbhaTourExperience({
               data-layout-removable={item.required ? undefined : "true"}
               className="sd-corridor-hotspot sd-abha-tour-control"
               style={itemPosition(item)}
-              onClick={() => setAnnouncement(`تم اختيار ${abhaTourItemLabels[item.kind]}`)}
+              onClick={() => {
+                setActiveItemId(item.id);
+                setAnnouncement(`تم فتح نافذة ${abhaTourItemLabels[item.kind]}`);
+              }}
               disabled={transitioning || isIncoming}
               tabIndex={isIncoming ? -1 : undefined}
-              aria-label={abhaTourItemLabels[item.kind]}
+              aria-label={`فتح نافذة ${abhaTourItemLabels[item.kind]}`}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
               <span className="sd-corridor-hotspot__icon"><ItemIcon kind={item.kind} /></span>
@@ -423,16 +442,18 @@ export function AbhaTourExperience({
 
       <div className="sd-abha-tour__transition-light" aria-hidden="true" />
 
-      <button
-        type="button"
-        className="sd-branch-choice-return sd-abha-tour__branch-return"
-        onClick={onReturnToBranches}
-        disabled={transitioning}
-        aria-label="العودة إلى اختيار الفرع"
-      >
-        <Building2 aria-hidden="true" />
-        <span>اختيار الفرع</span>
-      </button>
+      {sceneIndex === 0 && (
+        <button
+          type="button"
+          className="sd-branch-choice-return sd-abha-tour__branch-return"
+          onClick={onReturnToBranches}
+          disabled={transitioning}
+          aria-label="الرجوع لاختيار الفرع"
+        >
+          <Building2 aria-hidden="true" />
+          <span>الرجوع لاختيار الفرع</span>
+        </button>
+      )}
 
       {sceneIndex > 0 && (
         <button
@@ -449,13 +470,13 @@ export function AbhaTourExperience({
         </button>
       )}
 
-      {sceneIndex === abhaTourScenes.length - 1 && (
+      {sceneIndex > 0 && (
         <button
           type="button"
           className="sd-abha-tour__home"
           onClick={() => goToScene(0)}
-          disabled={transitioning}
-          aria-label="العودة إلى الصورة الأولى"
+          disabled={transitioning || calibrationActive}
+          aria-label="العودة إلى الصورة الأولى في فرع أبها"
         >
           <House aria-hidden="true" />
           <span>الرئيسية</span>
@@ -463,6 +484,45 @@ export function AbhaTourExperience({
       )}
 
       <p className="sd-abha-tour__announcement" aria-live="polite">{announcement}</p>
+
+      {activeItem && activeItemContent && (
+        <div
+          className={`sd-main-feature sd-abha-tour__feature is-${activeItem.kind}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sd-abha-feature-title"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setActiveItemId(null);
+          }}
+        >
+          <article className="sd-main-feature__panel">
+            <button
+              type="button"
+              className="sd-main-feature__close"
+              onClick={() => setActiveItemId(null)}
+              aria-label="إغلاق النافذة"
+            >
+              <X aria-hidden="true" />
+            </button>
+
+            <Image
+              className="sd-main-feature__logo"
+              src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+              alt="سعودي دنت"
+              width={4096}
+              height={1139}
+              unoptimized
+            />
+
+            <div className="sd-main-feature__symbol" aria-hidden="true">
+              <ItemIcon kind={activeItem.kind} />
+            </div>
+            <p className="sd-main-feature__eyebrow">{activeItemContent.eyebrow}</p>
+            <h2 id="sd-abha-feature-title">{activeItemContent.title}</h2>
+            <p className="sd-main-feature__message">{activeItemContent.message}</p>
+          </article>
+        </div>
+      )}
 
       <ConferenceLayoutEditor
         key={scene.id}

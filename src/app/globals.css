@@ -3291,11 +3291,13 @@ video {
 }
 
 .sd-branch-choice__option {
+  position: relative;
   display: grid;
   justify-items: center;
   gap: 0.6rem;
   min-height: clamp(190px, 27vh, 260px);
   padding: clamp(1.25rem, 3vw, 2rem);
+  overflow: hidden;
   border: 1px solid rgba(22, 102, 91, 0.2);
   border-radius: 28px;
   background: #fff;
@@ -3306,9 +3308,35 @@ video {
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
+.sd-branch-choice__option::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  background: rgba(255, 255, 255, 0.68);
+  pointer-events: none;
+}
+
+.sd-branch-choice__photo {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.02);
+  transition: transform 420ms ease;
+}
+
+.sd-branch-choice__option:hover .sd-branch-choice__photo,
+.sd-branch-choice__option:focus-visible .sd-branch-choice__photo {
+  transform: scale(1.07);
+}
+
 .sd-branch-choice__option.is-khamis {
   background: linear-gradient(145deg, #0b4d48, #0b3338);
   color: #fff;
+}
+
+.sd-branch-choice__option.is-khamis::before {
+  background: linear-gradient(145deg, rgba(5, 68, 63, 0.68), rgba(4, 40, 45, 0.82));
 }
 
 .sd-branch-choice__option:hover,
@@ -3319,6 +3347,8 @@ video {
 }
 
 .sd-branch-choice__icon {
+  position: relative;
+  z-index: 2;
   display: grid;
   place-items: center;
   width: clamp(72px, 8vw, 94px);
@@ -3335,10 +3365,14 @@ video {
 }
 
 .sd-branch-choice__option strong {
+  position: relative;
+  z-index: 2;
   font-size: clamp(1.25rem, 2.3vw, 1.85rem);
 }
 
 .sd-branch-choice__option small {
+  position: relative;
+  z-index: 2;
   color: currentColor;
   font-size: 0.9rem;
   opacity: 0.7;
@@ -3464,7 +3498,8 @@ video {
   z-index: 30;
 }
 
-.sd-abha-tour__home {
+.sd-abha-tour__home,
+.sd-khamis-tour__home {
   position: absolute;
   z-index: 30;
   right: 50%;
@@ -3490,7 +3525,8 @@ video {
   touch-action: manipulation;
 }
 
-.sd-abha-tour__home svg {
+.sd-abha-tour__home svg,
+.sd-khamis-tour__home svg {
   width: 22px;
   height: 22px;
   color: var(--sd-guidance-green);
@@ -3535,6 +3571,7 @@ video {
 .sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-image-coordinates,
 .sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-back,
 .sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-screen-presentation__blank > .sd-branch-choice-return,
+.sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-khamis-tour__home,
 .sd-screen-presentation.is-cinematic:not(.is-calibrating) .sd-khamis-tour-pagination {
   animation: sd-scene-controls-settle 320ms ease 180ms both;
 }
@@ -3542,6 +3579,7 @@ video {
 .sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-image-coordinates,
 .sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-conference-back,
 .sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-screen-presentation__blank > .sd-branch-choice-return,
+.sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-khamis-tour__home,
 .sd-screen-presentation.is-cinematic.is-branch-transitioning:not(.is-calibrating) .sd-khamis-tour-pagination {
   animation: none !important;
   opacity: 0;
@@ -3582,10 +3620,19 @@ video {
 .sd-screen-presentation.is-chrome-idle .sd-abha-tour__branch-return {
   opacity: 0;
   pointer-events: none;
+}
+
+.sd-screen-presentation.is-chrome-idle .sd-branch-choice-return,
+.sd-screen-presentation.is-chrome-idle .sd-abha-tour__branch-return {
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.sd-screen-presentation.is-chrome-idle .sd-conference-back {
   transform: translateY(-8px);
 }
 
-.sd-screen-presentation.is-chrome-idle .sd-abha-tour__home {
+.sd-screen-presentation.is-chrome-idle .sd-abha-tour__home,
+.sd-screen-presentation.is-chrome-idle .sd-khamis-tour__home {
   opacity: 0;
   pointer-events: none;
   transform: translateX(50%) translateY(8px);
@@ -3594,7 +3641,8 @@ video {
 .sd-screen-presentation.is-cinematic .sd-branch-choice-return,
 .sd-screen-presentation.is-cinematic .sd-conference-back,
 .sd-screen-presentation.is-cinematic .sd-abha-tour__branch-return,
-.sd-screen-presentation.is-cinematic .sd-abha-tour__home {
+.sd-screen-presentation.is-cinematic .sd-abha-tour__home,
+.sd-screen-presentation.is-cinematic .sd-khamis-tour__home {
   transition: opacity 420ms ease, transform 420ms ease, background 180ms ease, border-color 180ms ease;
 }
 
@@ -3826,8 +3874,42 @@ video {
   box-shadow: 0 0 0 4px rgba(98, 234, 169, 0.16);
 }
 
-.sd-khamis-tour-pagination > span {
-  cursor: default;
+.sd-khamis-tour-pagination button {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sd-khamis-tour-pagination button::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  border-radius: 50%;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.sd-khamis-tour-pagination button.is-active {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sd-khamis-tour-pagination button.is-active::before {
+  border-color: #62eaa9;
+  background: #62eaa9;
+  box-shadow: 0 0 0 4px rgba(98, 234, 169, 0.16);
+}
+
+.sd-khamis-tour-pagination button:focus-visible {
+  outline: 2px solid #effff7;
+  outline-offset: 1px;
 }
 
 .sd-abha-tour__announcement {
@@ -3959,7 +4041,9 @@ video {
   position: absolute;
   z-index: 7;
   top: clamp(18px, 2.4vw, 34px);
-  left: clamp(18px, 2.4vw, 34px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   background: rgba(5, 42, 45, 0.72);
   color: #fff;
   backdrop-filter: blur(14px);
@@ -5214,6 +5298,14 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-width: 150px;
 }
 
+.sd-left-lobby-hotspot--marketing {
+  --corridor-x: 63%;
+  --corridor-y: 56%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
 .sd-left-reception-controls {
   position: absolute;
   z-index: 5;
@@ -5313,6 +5405,14 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-width: 150px;
 }
 
+.sd-implant-corridor-hotspot--clinic-right {
+  --corridor-x: 88%;
+  --corridor-y: 56%;
+  --corridor-icon-size: 48px;
+  --corridor-label-size: 0.72rem;
+  --corridor-width: 150px;
+}
+
 .sd-implant-corridor-hotspot--implant {
   --corridor-x: 48%;
   --corridor-y: 60%;
@@ -5366,6 +5466,34 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-icon-size: 48px;
   --corridor-label-size: 0.72rem;
   --corridor-width: 150px;
+}
+
+.sd-implant-unit-lobby-return-to-hall {
+  --arrow-angle: 180deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 76%;
+  width: clamp(82px, 5vw, 100px);
+  height: clamp(108px, 7.6vw, 136px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.sd-implant-unit-lobby-return-to-hall:disabled {
+  cursor: wait;
+}
+
+.sd-implant-unit-lobby-return-to-hall .sd-conference-floor-arrow__projection {
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-reception-right-corridor-controls {
@@ -5438,6 +5566,34 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-icon-size: 48px;
   --corridor-label-size: 0.72rem;
   --corridor-width: 150px;
+}
+
+.sd-reception-right-lobby-return-to-hall {
+  --arrow-angle: 180deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
+  position: absolute;
+  z-index: 5;
+  left: 52%;
+  top: 78%;
+  width: clamp(82px, 5vw, 100px);
+  height: clamp(108px, 7.6vw, 136px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.sd-reception-right-lobby-return-to-hall:disabled {
+  cursor: wait;
+}
+
+.sd-reception-right-lobby-return-to-hall .sd-conference-floor-arrow__projection {
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-conference-image-coordinates > .is-layout-editable {
@@ -5781,6 +5937,34 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-icon-size: 48px;
   --corridor-label-size: 0.7rem;
   --corridor-width: 175px;
+}
+
+.sd-xray-fifth-return {
+  --arrow-angle: 180deg;
+  --arrow-tilt: 70deg;
+  --arrow-depth: 0.76;
+  position: absolute;
+  z-index: 5;
+  left: 43%;
+  top: 80%;
+  width: clamp(82px, 5vw, 100px);
+  height: clamp(108px, 7.6vw, 136px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.sd-xray-fifth-return:disabled {
+  cursor: wait;
+}
+
+.sd-xray-fifth-return .sd-conference-floor-arrow__projection {
+  transform: perspective(460px) rotateX(var(--sd-layout-tilt, var(--arrow-tilt))) rotateZ(var(--sd-layout-angle, var(--arrow-angle))) scaleY(var(--sd-layout-depth, var(--arrow-depth)));
 }
 
 .sd-khamis-side-controls {
@@ -6231,6 +6415,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 .sd-xray-third-forward .sd-conference-floor-arrow__projection,
 .sd-xray-fourth-forward .sd-conference-floor-arrow__projection,
 .sd-xray-fourth-side-forward .sd-conference-floor-arrow__projection,
+.sd-xray-fifth-return .sd-conference-floor-arrow__projection,
+.sd-implant-unit-lobby-return-to-hall .sd-conference-floor-arrow__projection,
+.sd-reception-right-lobby-return-to-hall .sd-conference-floor-arrow__projection,
 .sd-khamis-side-return .sd-conference-floor-arrow__projection {
   isolation: isolate;
   transition: filter 220ms ease, scale 220ms ease;
@@ -6246,6 +6433,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
 .sd-xray-third-forward svg,
 .sd-xray-fourth-forward svg,
 .sd-xray-fourth-side-forward svg,
+.sd-xray-fifth-return svg,
+.sd-implant-unit-lobby-return-to-hall svg,
+.sd-reception-right-lobby-return-to-hall svg,
 .sd-khamis-side-return svg {
   position: relative;
   z-index: 1;
@@ -9567,7 +9757,8 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   .sd-screen-presentation.is-cinematic .sd-branch-choice-return,
   .sd-screen-presentation.is-cinematic .sd-conference-back,
   .sd-screen-presentation.is-cinematic .sd-abha-tour__branch-return,
-  .sd-screen-presentation.is-cinematic .sd-abha-tour__home {
+  .sd-screen-presentation.is-cinematic .sd-abha-tour__home,
+  .sd-screen-presentation.is-cinematic .sd-khamis-tour__home {
     transition-duration: 0ms !important;
   }
 
@@ -9700,6 +9891,7 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-conference-image-coordinates,
   .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-conference-back,
   .sd-screen-presentation.is-cinematic .sd-screen-presentation__blank > .sd-branch-choice-return,
+  .sd-screen-presentation.is-cinematic .sd-khamis-tour__home,
   .sd-screen-presentation.is-cinematic .sd-khamis-tour-pagination {
     animation: none !important;
   }

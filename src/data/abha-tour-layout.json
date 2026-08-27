@@ -69,8 +69,7 @@
     "angle": 0,
     "tilt": 70,
     "depth": 0.78,
-    "required": true,
-    "targetSceneNumber": 8
+    "required": true
   },
   {
     "id": "abha-07-main-arrow",
@@ -131,17 +130,6 @@
     "tilt": 70,
     "depth": 0.78,
     "required": true
-  },
-  {
-    "id": "abha-01-arrow-2",
-    "sceneId": "abha-01",
-    "kind": "arrow",
-    "x": 50,
-    "y": 60,
-    "scale": 1,
-    "angle": 0,
-    "tilt": 70,
-    "depth": 0.78
   },
   {
     "id": "abha-02-lounge-1",
@@ -412,6 +400,39 @@
     "sceneId": "abha-11",
     "kind": "clinic",
     "x": 58,
+    "y": 60,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  {
+    "id": "abha-06-prayer-1",
+    "sceneId": "abha-06",
+    "kind": "prayer",
+    "x": 42,
+    "y": 60,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  {
+    "id": "abha-08-radiology-1",
+    "sceneId": "abha-08",
+    "kind": "radiology",
+    "x": 42,
+    "y": 60,
+    "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  {
+    "id": "abha-08-lounge-1",
+    "sceneId": "abha-08",
+    "kind": "lounge",
+    "x": 42,
     "y": 60,
     "scale": 1,
     "angle": 0,
