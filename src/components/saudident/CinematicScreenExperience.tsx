@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Building2, Calculator, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, House, Maximize2, Megaphone, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { Armchair, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, House, Maximize2, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AbhaTourExperience } from "@/components/saudident/AbhaTourExperience";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
-import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, marketingDepartmentFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
+import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
@@ -68,7 +68,6 @@ type MainSceneFeature =
   | "xray-clinic"
   | "women-lounge"
   | "administrative-office"
-  | "marketing-department"
   | "left-reception-desk"
   | "next-clinic-left"
   | "next-clinic-center"
@@ -2509,7 +2508,7 @@ export function CinematicScreenExperience() {
         )}
 
         {activeScene === "left-lobby" && (
-          <div className="sd-left-lobby-controls sd-conference-image-coordinates" aria-label="اتجاه الردهة وقسما المحاسبة والتسويق">
+          <div className="sd-left-lobby-controls sd-conference-image-coordinates" aria-label="اتجاه الردهة وقسم الموارد البشرية">
             <button
               type="button"
               className="sd-conference-floor-arrow sd-left-lobby-forward"
@@ -2527,20 +2526,10 @@ export function CinematicScreenExperience() {
               aria-label={administrativeOfficeFeature.ariaLabel}
             >
               <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Calculator aria-hidden="true" /></span>
+              <span className="sd-corridor-hotspot__icon"><UsersRound aria-hidden="true" /></span>
               <strong>{administrativeOfficeFeature.shortLabel}</strong>
             </button>
 
-            <button
-              type="button"
-              className="sd-corridor-hotspot sd-left-lobby-hotspot--marketing"
-              onClick={() => setMainSceneFeature("marketing-department")}
-              aria-label={marketingDepartmentFeature.ariaLabel}
-            >
-              <span className="sd-corridor-hotspot__pulse" aria-hidden="true" />
-              <span className="sd-corridor-hotspot__icon"><Megaphone aria-hidden="true" /></span>
-              <strong>{marketingDepartmentFeature.shortLabel}</strong>
-            </button>
           </div>
         )}
 
@@ -3303,8 +3292,7 @@ export function CinematicScreenExperience() {
                 {mainSceneFeature === "central-radiology" && <Radiation />}
                 {mainSceneFeature === "xray-clinic" && <Stethoscope />}
                 {mainSceneFeature === "women-lounge" && <Armchair />}
-                {mainSceneFeature === "administrative-office" && <Calculator />}
-                {mainSceneFeature === "marketing-department" && <Megaphone />}
+                {mainSceneFeature === "administrative-office" && <UsersRound />}
                 {mainSceneFeature === "left-reception-desk" && <CalendarCheck2 />}
                 {(mainSceneFeature === "next-clinic-left" ||
                   mainSceneFeature === "next-clinic-center" ||
@@ -3350,14 +3338,6 @@ export function CinematicScreenExperience() {
                   <p className="sd-main-feature__eyebrow">{administrativeOfficeFeature.eyebrow}</p>
                   <h2 id="sd-main-feature-title">{administrativeOfficeFeature.title}</h2>
                   <p className="sd-main-feature__message">{administrativeOfficeFeature.message}</p>
-                </>
-              )}
-
-              {mainSceneFeature === "marketing-department" && (
-                <>
-                  <p className="sd-main-feature__eyebrow">{marketingDepartmentFeature.eyebrow}</p>
-                  <h2 id="sd-main-feature-title">{marketingDepartmentFeature.title}</h2>
-                  <p className="sd-main-feature__message">{marketingDepartmentFeature.message}</p>
                 </>
               )}
 

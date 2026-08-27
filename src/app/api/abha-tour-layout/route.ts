@@ -13,6 +13,8 @@ const ITEM_KINDS = new Set<AbhaTourItemKind>([
   "prayer",
   "examination",
   "administration",
+  "medical-director",
+  "marketing",
 ]);
 
 function sanitizeItem(value: unknown): AbhaTourOverlay | null {

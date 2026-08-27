@@ -8,6 +8,7 @@ import {
   CalendarCheck2,
   ClipboardCheck,
   House,
+  Megaphone,
   MoonStar,
   Radiation,
   ShieldCheck,
@@ -49,6 +50,8 @@ const ITEM_KINDS: AbhaTourItemKind[] = [
   "radiology",
   "examination",
   "administration",
+  "medical-director",
+  "marketing",
 ];
 
 type SavedPlacement = {
@@ -109,6 +112,8 @@ function ItemIcon({ kind }: { kind: AbhaTourItemKind }) {
   if (kind === "radiology") return <Radiation aria-hidden="true" />;
   if (kind === "examination") return <ClipboardCheck aria-hidden="true" />;
   if (kind === "administration") return <Building2 aria-hidden="true" />;
+  if (kind === "medical-director") return <Building2 aria-hidden="true" />;
+  if (kind === "marketing") return <Megaphone aria-hidden="true" />;
   if (kind === "sterilization") return <ShieldCheck aria-hidden="true" />;
   return <ArrowLeft aria-hidden="true" />;
 }

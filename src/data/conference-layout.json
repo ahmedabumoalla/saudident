@@ -599,10 +599,18 @@
     "tilt": 70,
     "depth": 0.78
   },
-  "abha-01:abha-01-administration-1": {
+  "abha-01:abha-01-medical-director-1": {
     "x": 91.11,
     "y": 56.65,
     "scale": 1.2,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  "abha-01:abha-01-marketing-1": {
+    "x": 59.19,
+    "y": 60.72,
+    "scale": 0.7,
     "angle": 0,
     "tilt": 70,
     "depth": 0.78

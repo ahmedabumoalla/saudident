@@ -17,7 +17,9 @@ export type AbhaTourItemKind =
   | "reception"
   | "prayer"
   | "examination"
-  | "administration";
+  | "administration"
+  | "medical-director"
+  | "marketing";
 
 export type AbhaTourOverlay = {
   id: string;
@@ -43,6 +45,8 @@ export const abhaTourItemLabels: Record<AbhaTourItemKind, string> = {
   prayer: "مصلى",
   examination: "فحص",
   administration: "مكتب إداري",
+  "medical-director": "المدير الطبي",
+  marketing: "قسم التسويق",
 };
 
 export type AbhaTourItemContent = {
@@ -52,10 +56,15 @@ export type AbhaTourItemContent = {
 };
 
 export const abhaTourItemContentById: Record<string, AbhaTourItemContent> = {
-  "abha-01-administration-1": {
-    eyebrow: "المكتب الإداري في سعودي دنت",
-    title: "تنسيق يدعم جودة كل زيارة",
-    message: "نعمل خلف الكواليس لتنظيم تفاصيل الفرع ودعم فرقنا حتى تصل إليك عناية أكثر سلاسة واهتمامًا",
+  "abha-01-medical-director-1": {
+    eyebrow: "المدير الطبي في سعودي دنت",
+    title: "إشراف طبي يرفع جودة الرعاية",
+    message: "يشرف المدير الطبي على جودة الممارسات وتنسيق الفرق العلاجية لضمان رعاية آمنة ومتسقة في كل زيارة",
+  },
+  "abha-01-marketing-1": {
+    eyebrow: "قسم التسويق في سعودي دنت",
+    title: "تواصل يقرّب العناية إليك",
+    message: "نعرض خدماتنا ومبادراتنا بوضوح ونبني تواصلًا يعكس هوية سعودي دنت ويقرّب رسالتنا من المجتمع",
   },
   "abha-02-lounge-1": {
     eyebrow: "استراحة سعودي دنت",
@@ -229,6 +238,16 @@ const abhaTourFallbackContent: Record<Exclude<AbhaTourItemKind, "arrow">, AbhaTo
     eyebrow: "المكتب الإداري في سعودي دنت",
     title: "تنظيم يدعم جودة تجربتك",
     message: "ننسق تفاصيل العمل داخل الفرع لضمان خدمة أكثر سلاسة واهتمامًا",
+  },
+  "medical-director": {
+    eyebrow: "المدير الطبي في سعودي دنت",
+    title: "إشراف طبي يدعم جودة الرعاية",
+    message: "نتابع جودة الممارسات وننسق العمل الطبي لتبقى رعايتك آمنة ومتسقة في كل زيارة",
+  },
+  marketing: {
+    eyebrow: "قسم التسويق في سعودي دنت",
+    title: "تواصل واضح يعكس هويتنا",
+    message: "نقرّب خدمات سعودي دنت ومبادراته من المجتمع بمحتوى واضح وتواصل يحفظ ثقتكم",
   },
 };
 

@@ -148,19 +148,11 @@ export const khamisLobbySideFeatures = {
 export type KhamisLobbySideFeatureId = keyof typeof khamisLobbySideFeatures;
 
 export const administrativeOfficeFeature = {
-  shortLabel: "قسم المحاسبة",
-  ariaLabel: "فتح نافذة قسم المحاسبة",
-  eyebrow: "قسم المحاسبة في سعودي دنت",
-  title: "وضوح مالي يكمّل ثقتك",
-  message: "نراجع تفاصيل الفواتير والمدفوعات بدقة ونقدم لك المعلومات المالية بوضوح لتبقى تجربتك سهلة ومطمئنة",
-} as const;
-
-export const marketingDepartmentFeature = {
-  shortLabel: "قسم التسويق",
-  ariaLabel: "فتح نافذة قسم التسويق",
-  eyebrow: "قسم التسويق في سعودي دنت",
-  title: "حضور يعكس جودة العناية",
-  message: "نبني تواصلًا يعبّر عن هوية سعودي دنت ويقرّب خدماتنا من المجتمع بمحتوى واضح وتجربة تحفظ ثقتكم",
+  shortLabel: "قسم الموارد البشرية",
+  ariaLabel: "فتح نافذة قسم الموارد البشرية",
+  eyebrow: "قسم الموارد البشرية في سعودي دنت",
+  title: "فريق مميز يصنع عناية استثنائية",
+  message: "نستثمر في كوادرنا ونصنع بيئة عمل ملهمة تنعكس خبرتها واهتمامها على كل تفاصيل تجربتك في سعودي دنت",
 } as const;
 
 export const leftReceptionFeature = {

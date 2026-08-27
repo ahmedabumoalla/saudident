@@ -69,8 +69,7 @@
     "angle": 0,
     "tilt": 70,
     "depth": 0.78,
-    "required": true,
-    "targetSceneNumber": 8
+    "required": true
   },
   {
     "id": "abha-07-main-arrow",
@@ -309,12 +308,23 @@
     "depth": 0.78
   },
   {
-    "id": "abha-01-administration-1",
+    "id": "abha-01-medical-director-1",
     "sceneId": "abha-01",
-    "kind": "administration",
+    "kind": "medical-director",
     "x": 42,
     "y": 60,
     "scale": 1,
+    "angle": 0,
+    "tilt": 70,
+    "depth": 0.78
+  },
+  {
+    "id": "abha-01-marketing-1",
+    "sceneId": "abha-01",
+    "kind": "marketing",
+    "x": 75,
+    "y": 56.65,
+    "scale": 1.2,
     "angle": 0,
     "tilt": 70,
     "depth": 0.78

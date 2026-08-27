@@ -5298,14 +5298,6 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   --corridor-width: 150px;
 }
 
-.sd-left-lobby-hotspot--marketing {
-  --corridor-x: 63%;
-  --corridor-y: 56%;
-  --corridor-icon-size: 48px;
-  --corridor-label-size: 0.72rem;
-  --corridor-width: 150px;
-}
-
 .sd-left-reception-controls {
   position: absolute;
   z-index: 5;
