@@ -1,12 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Armchair, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, House, Maximize2, Minimize2, MoonStar, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Armchair, Building2, CalendarCheck2, ClipboardCheck, Headphones, HeartHandshake, House, Maximize2, Minimize2, MoonStar, Play, Radiation, ShieldCheck, Stethoscope, UsersRound, Wrench, X } from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AbhaTourExperience } from "@/components/saudident/AbhaTourExperience";
 import { ConferenceLayoutEditor } from "@/components/saudident/ConferenceLayoutEditor";
+import { AUTOMATIC_TOUR_TIMING, getKhamisFeatureDwellMs, KHAMIS_AUTOMATIC_TOUR, type AutomaticKhamisFeature } from "@/data/automatic-tour";
 import { administrativeOfficeFeature, doctors, implantCorridorFeatures, implantUnitLobbyFeatures, khamisLobbySideFeatures, leftReceptionFeature, receptionHallFeatures, receptionRightCorridorFeatures, receptionRightLobbyFeatures, xrayFifthFeatures, xrayFourthFeatures, xrayThirdFeatures, type ImplantCorridorFeatureId, type ImplantUnitLobbyFeatureId, type KhamisLobbySideFeatureId, type ReceptionHallFeatureId, type ReceptionRightCorridorFeatureId, type ReceptionRightLobbyFeatureId, type SaudiDentDoctor, type XrayFifthFeatureId, type XrayFourthFeatureId, type XrayThirdFeatureId } from "@/data/saudident";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
+import { playCinematicDialogEntrance, playCinematicDialogExit } from "@/lib/cinematic-dialog-motion";
 
 const NAVIGATION_KEYS = new Set(["ArrowDown", "PageDown", " "]);
 const CINEMATIC_IDLE_MS = 4600;
@@ -81,6 +84,11 @@ type MainSceneFeature =
   | ReceptionRightCorridorFeatureId
   | ReceptionRightLobbyFeatureId
   | KhamisLobbySideFeatureId;
+
+type AutomaticKhamisRoute = ReadonlyArray<{
+  readonly scene: ConferenceScene;
+  readonly features: readonly AutomaticKhamisFeature[];
+}>;
 
 function hasPortrait(doctor: SaudiDentDoctor): doctor is SaudiDentDoctor & { image: string } {
   return Boolean(doctor.image);
@@ -161,10 +169,15 @@ export function CinematicScreenExperience() {
   const cinematicEnabled = useSyncExternalStore(subscribeToCinematicRequest, isCinematicRequested, () => true);
   const rootRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const branchTimelineRef = useRef<gsap.core.Animation | null>(null);
   const sceneTimelineRef = useRef<gsap.core.Timeline | null>(null);
   const patientDialogRef = useRef<HTMLDivElement>(null);
   const mainFeatureDialogRef = useRef<HTMLDivElement>(null);
   const completedRef = useRef(false);
+  const activeSceneRef = useRef<ConferenceScene>("hall");
+  const automaticTourSessionRef = useRef(0);
+  const automaticTourWaitRef = useRef<number | null>(null);
+  const automaticTourActiveRef = useRef(false);
   const [openingComplete, setOpeningComplete] = useState(false);
   const [branchView, setBranchView] = useState<BranchView>("choice");
   const [branchTransitioning, setBranchTransitioning] = useState(false);
@@ -176,6 +189,8 @@ export function CinematicScreenExperience() {
   const [chromeIdle, setChromeIdle] = useState(false);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [automaticTourActive, setAutomaticTourActive] = useState(false);
+  const [automaticTourStatus, setAutomaticTourStatus] = useState("جولة فرع خميس مشيط");
   const activeXrayThirdFeature = isXrayThirdFeature(mainSceneFeature) ? xrayThirdFeatures[mainSceneFeature] : null;
   const activeXrayFourthFeature = isXrayFourthFeature(mainSceneFeature) ? xrayFourthFeatures[mainSceneFeature] : null;
   const activeXrayFifthFeature = isXrayFifthFeature(mainSceneFeature) ? xrayFifthFeatures[mainSceneFeature] : null;
@@ -198,7 +213,7 @@ export function CinematicScreenExperience() {
   }, []);
 
   const jumpToKhamisScene = useCallback((destination: ConferenceScene) => {
-    if (sceneTransitioning || destination === activeScene) return;
+    if (sceneTransitioning || destination === activeSceneRef.current) return;
 
     const root = rootRef.current;
     const scenes = root
@@ -219,8 +234,94 @@ export function CinematicScreenExperience() {
     gsap.set(destinationScene, { autoAlpha: 1 });
     if (transitionLight) gsap.set(transitionLight, { autoAlpha: 0 });
     setMainSceneFeature(null);
+    activeSceneRef.current = destination;
     setActiveScene(destination);
-  }, [activeScene, sceneTransitioning]);
+  }, [sceneTransitioning]);
+
+  useEffect(() => {
+    activeSceneRef.current = activeScene;
+  }, [activeScene]);
+
+  const isAutomaticTourSession = useCallback((session: number) => (
+    automaticTourActiveRef.current && automaticTourSessionRef.current === session
+  ), []);
+
+  const waitForAutomaticTour = useCallback((session: number, duration: number) => new Promise<boolean>((resolve) => {
+    if (!isAutomaticTourSession(session)) {
+      resolve(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      automaticTourWaitRef.current = null;
+      resolve(isAutomaticTourSession(session));
+    }, duration);
+    automaticTourWaitRef.current = timer;
+  }), [isAutomaticTourSession]);
+
+  const transitionToKhamisSceneForAutomaticTour = useCallback((session: number, destination: ConferenceScene) => new Promise<boolean>((resolve) => {
+    if (!isAutomaticTourSession(session)) {
+      resolve(false);
+      return;
+    }
+
+    const root = rootRef.current;
+    const currentScene = root?.querySelector<HTMLElement>(`.sd-conference-scene--${activeSceneRef.current}`);
+    const nextScene = root?.querySelector<HTMLElement>(`.sd-conference-scene--${destination}`);
+    const lightSweep = root?.querySelector<HTMLElement>(".sd-conference-scene-transition");
+    const allScenes = root ? Array.from(root.querySelectorAll<HTMLElement>(".sd-conference-scene")) : [];
+    let settled = false;
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      activeSceneRef.current = destination;
+      setActiveScene(destination);
+      setSceneTransitioning(false);
+      resolve(isAutomaticTourSession(session));
+    };
+    const cancel = () => {
+      if (settled) return;
+      settled = true;
+      setSceneTransitioning(false);
+      resolve(false);
+    };
+
+    setMainSceneFeature(null);
+    setPatientRelationsOpen(false);
+
+    if (!nextScene || !currentScene || activeSceneRef.current === destination || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(allScenes, { autoAlpha: 0, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)" });
+      if (nextScene) gsap.set(nextScene, { autoAlpha: 1 });
+      finish();
+      return;
+    }
+
+    setSceneTransitioning(true);
+    sceneTimelineRef.current?.kill();
+    gsap.set(nextScene, {
+      autoAlpha: 0,
+      xPercent: 3,
+      scale: 1.075,
+      filter: "blur(10px) brightness(0.8)",
+      transformOrigin: "50% 62%",
+    });
+
+    const timeline = gsap.timeline({
+      defaults: { overwrite: "auto" },
+      onComplete: finish,
+      onInterrupt: cancel,
+    });
+    sceneTimelineRef.current = timeline;
+    timeline
+      .to(currentScene, { autoAlpha: 0, scale: 1.045, filter: "blur(6px) brightness(0.78)", duration: 0.62, ease: "power2.inOut" }, 0)
+      .to(nextScene, { autoAlpha: 1, xPercent: 0, scale: 1, filter: "blur(0px) brightness(1)", duration: 0.92, ease: "power3.out" }, 0.28);
+    if (lightSweep) {
+      timeline
+        .fromTo(lightSweep, { autoAlpha: 0, xPercent: 72 }, { autoAlpha: 0.58, xPercent: -72, duration: 0.76, ease: "power2.inOut" }, 0.1)
+        .to(lightSweep, { autoAlpha: 0, duration: 0.28, ease: "power2.out" }, 0.66);
+    }
+  }), [isAutomaticTourSession]);
 
   useEffect(() => {
     const syncFullscreenState = () => {
@@ -276,6 +377,7 @@ export function CinematicScreenExperience() {
       branchView === "abha" ? ".sd-abha-tour" : ".sd-screen-presentation__blank",
     );
     const finish = () => {
+      branchTimelineRef.current = null;
       if (currentTour) gsap.set(currentTour, { autoAlpha: 0, clearProps: "filter,transform,clipPath" });
       setBranchView("choice");
       setBranchTransitioning(false);
@@ -287,7 +389,7 @@ export function CinematicScreenExperience() {
       return;
     }
 
-    gsap.to(currentTour, {
+    branchTimelineRef.current = gsap.to(currentTour, {
       autoAlpha: 0,
       scale: 1.045,
       filter: "blur(10px) brightness(0.7)",
@@ -306,7 +408,9 @@ export function CinematicScreenExperience() {
     const selected = choice?.querySelector<HTMLElement>(".sd-branch-choice__option.is-khamis");
     const tour = root?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
     const finish = () => {
+      branchTimelineRef.current = null;
       if (tour) gsap.set(tour, { autoAlpha: 1, clearProps: "filter,transform,clipPath" });
+      activeSceneRef.current = "hall";
       setActiveScene("hall");
       setBranchView("khamis");
       setBranchTransitioning(false);
@@ -324,7 +428,7 @@ export function CinematicScreenExperience() {
       filter: "blur(14px) brightness(0.65)",
       clipPath: "inset(8% 8% 8% 8% round 36px)",
     });
-    gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
+    branchTimelineRef.current = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
       .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-khamis)"), {
         autoAlpha: 0,
         y: -18,
@@ -349,6 +453,7 @@ export function CinematicScreenExperience() {
     const choice = root?.querySelector<HTMLElement>(".sd-branch-choice");
     const selected = choice?.querySelector<HTMLElement>(".sd-branch-choice__option.is-abha");
     const finish = () => {
+      branchTimelineRef.current = null;
       setBranchView("abha");
       setBranchTransitioning(false);
     };
@@ -359,7 +464,7 @@ export function CinematicScreenExperience() {
       return;
     }
 
-    gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
+    branchTimelineRef.current = gsap.timeline({ defaults: { overwrite: "auto" }, onComplete: finish })
       .to(choice.querySelectorAll(".sd-branch-choice__option:not(.is-abha)"), {
         autoAlpha: 0,
         y: -18,
@@ -2130,28 +2235,233 @@ export function CinematicScreenExperience() {
   const closePatientRelations = useCallback(() => {
     const overlay = patientDialogRef.current;
     const panel = overlay?.querySelector<HTMLElement>(".sd-patient-relations__panel");
-    if (!overlay || !panel || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!overlay || !panel) {
       setPatientRelationsOpen(false);
       return;
     }
-
-    gsap.timeline({ onComplete: () => setPatientRelationsOpen(false) })
-      .to(panel, { autoAlpha: 0, y: 18, scale: 0.97, duration: 0.24, ease: "power2.in" })
-      .to(overlay, { autoAlpha: 0, duration: 0.22, ease: "power2.out" }, 0.08);
+    playCinematicDialogExit(overlay, panel, () => setPatientRelationsOpen(false));
   }, []);
 
   const closeMainSceneFeature = useCallback(() => {
     const overlay = mainFeatureDialogRef.current;
     const panel = overlay?.querySelector<HTMLElement>(".sd-main-feature__panel");
-    if (!overlay || !panel || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!overlay || !panel) {
       setMainSceneFeature(null);
       return;
     }
-
-    gsap.timeline({ onComplete: () => setMainSceneFeature(null) })
-      .to(panel, { autoAlpha: 0, y: 18, scale: 0.97, duration: 0.24, ease: "power2.in" })
-      .to(overlay, { autoAlpha: 0, duration: 0.22, ease: "power2.out" }, 0.08);
+    playCinematicDialogExit(overlay, panel, () => setMainSceneFeature(null));
   }, []);
+
+  const playAutomaticKhamisRoute = useCallback(async (
+    session: number,
+    route: AutomaticKhamisRoute,
+    status: string,
+  ) => {
+    setAutomaticTourStatus(status);
+
+    for (const step of route) {
+      if (!await transitionToKhamisSceneForAutomaticTour(session, step.scene)) return false;
+      if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.sceneArrivalMs)) return false;
+
+      for (const feature of step.features) {
+        if (!isAutomaticTourSession(session)) return false;
+        if (feature === "patient-relations") {
+          setPatientRelationsOpen(true);
+        } else {
+          setMainSceneFeature(feature);
+        }
+
+        if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.dialogEnterMs)) return false;
+        if (!await waitForAutomaticTour(session, getKhamisFeatureDwellMs(feature))) return false;
+
+        if (feature === "patient-relations") {
+          closePatientRelations();
+        } else {
+          closeMainSceneFeature();
+        }
+
+        if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.dialogExitMs)) return false;
+        if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.betweenFeaturesMs)) return false;
+      }
+    }
+
+    return true;
+  }, [closeMainSceneFeature, closePatientRelations, isAutomaticTourSession, transitionToKhamisSceneForAutomaticTour, waitForAutomaticTour]);
+
+  const runAutomaticTour = useCallback(async (session: number) => {
+    setAutomaticTourStatus("جولة فرع خميس مشيط — المسار الأيمن");
+    openKhamisBranch();
+    if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.branchTransitionMs)) return;
+
+    if (!await playAutomaticKhamisRoute(
+      session,
+      KHAMIS_AUTOMATIC_TOUR.right,
+      "جولة فرع خميس مشيط — المسار الأيمن",
+    )) return;
+
+    if (!await transitionToKhamisSceneForAutomaticTour(session, "hall")) return;
+    if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.routeResetMs)) return;
+
+    if (!await playAutomaticKhamisRoute(
+      session,
+      KHAMIS_AUTOMATIC_TOUR.left,
+      "جولة فرع خميس مشيط — المسار الأيسر",
+    )) return;
+
+    if (!await transitionToKhamisSceneForAutomaticTour(session, "hall")) return;
+    if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.sceneArrivalMs)) return;
+
+    setAutomaticTourStatus("الانتقال إلى فرع أبها");
+    showBranchChoice();
+    if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.branchTransitionMs)) return;
+    openAbhaBranch();
+    if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.branchTransitionMs)) return;
+    setAutomaticTourStatus("جولة فرع أبها");
+  }, [openAbhaBranch, openKhamisBranch, playAutomaticKhamisRoute, showBranchChoice, transitionToKhamisSceneForAutomaticTour, waitForAutomaticTour]);
+
+  const startAutomaticTour = useCallback(() => {
+    if (automaticTourActiveRef.current || branchView !== "choice" || branchTransitioning || !openingComplete) return;
+
+    if (automaticTourWaitRef.current !== null) {
+      window.clearTimeout(automaticTourWaitRef.current);
+      automaticTourWaitRef.current = null;
+    }
+    const session = ++automaticTourSessionRef.current;
+    automaticTourActiveRef.current = true;
+    setAutomaticTourActive(true);
+    setMainSceneFeature(null);
+    setPatientRelationsOpen(false);
+    setAutomaticTourStatus("جولة فرع خميس مشيط — المسار الأيمن");
+    void runAutomaticTour(session);
+  }, [branchTransitioning, branchView, openingComplete, runAutomaticTour]);
+
+  const finishAutomaticTour = useCallback(() => {
+    if (!automaticTourActiveRef.current) return;
+    const session = automaticTourSessionRef.current;
+    setAutomaticTourStatus("اكتملت الجولة — العودة لاختيار الفرع");
+    showBranchChoice();
+
+    void (async () => {
+      if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.branchTransitionMs)) return;
+      automaticTourActiveRef.current = false;
+      setAutomaticTourActive(false);
+      setAutomaticTourStatus("جولة فرع خميس مشيط");
+    })();
+  }, [showBranchChoice, waitForAutomaticTour]);
+
+  const stopAutomaticTour = useCallback(() => {
+    if (!automaticTourActiveRef.current) return;
+
+    automaticTourActiveRef.current = false;
+    automaticTourSessionRef.current += 1;
+    if (automaticTourWaitRef.current !== null) {
+      window.clearTimeout(automaticTourWaitRef.current);
+      automaticTourWaitRef.current = null;
+    }
+
+    branchTimelineRef.current?.kill();
+    branchTimelineRef.current = null;
+    sceneTimelineRef.current?.kill();
+    sceneTimelineRef.current = null;
+
+    const root = rootRef.current;
+    const branchChoice = root?.querySelector<HTMLElement>(".sd-branch-choice");
+    const branchOptions = branchChoice
+      ? Array.from(branchChoice.querySelectorAll<HTMLElement>(".sd-branch-choice__option"))
+      : [];
+    const khamisTour = root?.querySelector<HTMLElement>(".sd-screen-presentation__blank");
+
+    if (branchChoice) {
+      gsap.set(branchChoice, { autoAlpha: 1, clearProps: "filter,transform,clipPath" });
+      gsap.set(branchOptions, { autoAlpha: 1, clearProps: "filter,transform" });
+    }
+    if (khamisTour) {
+      gsap.set(khamisTour, { autoAlpha: 0, clearProps: "filter,transform,clipPath" });
+    }
+
+    activeSceneRef.current = "hall";
+    setActiveScene("hall");
+    setMainSceneFeature(null);
+    setPatientRelationsOpen(false);
+    setSceneTransitioning(false);
+    setBranchTransitioning(false);
+    setBranchView("choice");
+    setChromeIdle(false);
+    setAutomaticTourActive(false);
+    setAutomaticTourStatus("جولة فرع خميس مشيط");
+  }, []);
+
+  useEffect(() => {
+    if (!automaticTourActive) return;
+
+    const stopOnInteraction = () => stopAutomaticTour();
+    const passiveCaptureOptions: AddEventListenerOptions = { passive: true, capture: true };
+
+    window.addEventListener("pointerdown", stopOnInteraction, passiveCaptureOptions);
+    window.addEventListener("touchstart", stopOnInteraction, passiveCaptureOptions);
+
+    return () => {
+      window.removeEventListener("pointerdown", stopOnInteraction, true);
+      window.removeEventListener("touchstart", stopOnInteraction, true);
+    };
+  }, [automaticTourActive, stopAutomaticTour]);
+
+  useEffect(() => {
+    if (!openingComplete || branchView !== "choice" || branchTransitioning || automaticTourActive) return;
+
+    let idleTimer = window.setTimeout(startAutomaticTour, AUTOMATIC_TOUR_TIMING.idleBeforeStartMs);
+    const restartIdleTimer = () => {
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(startAutomaticTour, AUTOMATIC_TOUR_TIMING.idleBeforeStartMs);
+    };
+    const passiveOptions: AddEventListenerOptions = { passive: true };
+
+    window.addEventListener("pointerdown", restartIdleTimer, passiveOptions);
+    window.addEventListener("pointermove", restartIdleTimer, passiveOptions);
+    window.addEventListener("touchstart", restartIdleTimer, passiveOptions);
+    window.addEventListener("wheel", restartIdleTimer, passiveOptions);
+    window.addEventListener("keydown", restartIdleTimer);
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("pointerdown", restartIdleTimer);
+      window.removeEventListener("pointermove", restartIdleTimer);
+      window.removeEventListener("touchstart", restartIdleTimer);
+      window.removeEventListener("wheel", restartIdleTimer);
+      window.removeEventListener("keydown", restartIdleTimer);
+    };
+  }, [automaticTourActive, branchTransitioning, branchView, openingComplete, startAutomaticTour]);
+
+  useEffect(() => () => {
+    automaticTourActiveRef.current = false;
+    automaticTourSessionRef.current += 1;
+    if (automaticTourWaitRef.current !== null) {
+      window.clearTimeout(automaticTourWaitRef.current);
+      automaticTourWaitRef.current = null;
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!patientRelationsOpen) return;
+    const overlay = patientDialogRef.current;
+    const panel = overlay?.querySelector<HTMLElement>(".sd-patient-relations__panel");
+    if (!overlay || !panel) return;
+    const motion = playCinematicDialogEntrance(overlay, panel);
+    return () => {
+      motion?.kill();
+    };
+  }, [patientRelationsOpen]);
+
+  useLayoutEffect(() => {
+    if (!mainSceneFeature) return;
+    const overlay = mainFeatureDialogRef.current;
+    const panel = overlay?.querySelector<HTMLElement>(".sd-main-feature__panel");
+    if (!overlay || !panel) return;
+    const motion = playCinematicDialogEntrance(overlay, panel);
+    return () => {
+      motion?.kill();
+    };
+  }, [mainSceneFeature]);
 
   useEffect(() => {
     if (!patientRelationsOpen) return;
@@ -2329,13 +2639,30 @@ export function CinematicScreenExperience() {
   return (
     <div
       ref={rootRef}
-      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}${cinematicEnabled ? " is-cinematic" : " is-cinematic-disabled"}${layoutEditing ? " is-calibrating" : ""}${branchTransitioning ? " is-branch-transitioning" : ""}${chromeIdle && !layoutEditing ? " is-chrome-idle" : ""}`}
+      className={`sd-screen-presentation${openingComplete ? " is-opening-complete" : " is-opening-active"}${cinematicEnabled ? " is-cinematic" : " is-cinematic-disabled"}${layoutEditing ? " is-calibrating" : ""}${branchTransitioning ? " is-branch-transitioning" : ""}${chromeIdle && !layoutEditing ? " is-chrome-idle" : ""}${automaticTourActive ? " is-automatic-tour" : ""}`}
       dir="rtl"
     >
       <div className="sd-screen-presentation__ambient" aria-hidden="true" />
       <div className="sd-cinematic-texture" aria-hidden="true" />
 
-      {fullscreenAvailable && (
+      {automaticTourActive && (
+        <aside className="sd-automatic-tour-control" aria-live="polite">
+          <span className="sd-automatic-tour-control__status">
+            <i aria-hidden="true" />
+            <span>{automaticTourStatus}</span>
+          </span>
+          <button
+            type="button"
+            onClick={stopAutomaticTour}
+            aria-label="إيقاف الجولة التلقائية والعودة إلى اختيار الفرع"
+          >
+            <X aria-hidden="true" />
+            <span>إيقاف الجولة</span>
+          </button>
+        </aside>
+      )}
+
+      {!automaticTourActive && fullscreenAvailable && (
         <button
           type="button"
           className="sd-fullscreen-control"
@@ -2353,10 +2680,8 @@ export function CinematicScreenExperience() {
       <header className="sd-screen-presentation__brand">
         <span className="sd-screen-presentation__brand-logo">
           <Image
-            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            {...SAUDIDENT_LOGOS.navy}
             alt="سعودي دنت"
-            width={4096}
-            height={1139}
             priority
             unoptimized
           />
@@ -2368,7 +2693,7 @@ export function CinematicScreenExperience() {
         className={`sd-screen-presentation__blank is-${activeScene}${sceneTransitioning ? " is-scene-transitioning" : ""}`}
         aria-label="جولة داخل سعودي دنت"
         aria-hidden={branchView !== "khamis"}
-        inert={branchView !== "khamis"}
+        inert={branchView !== "khamis" || automaticTourActive}
       >
         <div className="sd-conference-scene sd-conference-scene--hall" aria-hidden="true" />
         <div className="sd-conference-scene sd-conference-scene--left-lobby" aria-hidden="true" />
@@ -3168,7 +3493,7 @@ export function CinematicScreenExperience() {
           </div>
         )}
 
-        {branchView === "khamis" && (
+        {branchView === "khamis" && !automaticTourActive && (
           <ConferenceLayoutEditor
             rootRef={rootRef}
             activeScene={activeScene}
@@ -3200,10 +3525,8 @@ export function CinematicScreenExperience() {
 
               <Image
                 className="sd-main-feature__logo"
-                src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+                {...SAUDIDENT_LOGOS.navy}
                 alt="سعودي دنت"
-                width={4096}
-                height={1139}
                 unoptimized
               />
 
@@ -3598,10 +3921,8 @@ export function CinematicScreenExperience() {
 
               <Image
                 className="sd-patient-relations__logo"
-                src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+                {...SAUDIDENT_LOGOS.navy}
                 alt="سعودي دنت"
-                width={4096}
-                height={1139}
                 unoptimized
               />
 
@@ -3626,10 +3947,8 @@ export function CinematicScreenExperience() {
           <div className="sd-branch-choice__panel">
             <Image
               className="sd-branch-choice__logo"
-              src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+              {...SAUDIDENT_LOGOS.navy}
               alt="سعودي دنت"
-              width={4096}
-              height={1139}
               priority
               unoptimized
             />
@@ -3676,6 +3995,22 @@ export function CinematicScreenExperience() {
               </button>
             </div>
           </div>
+
+          {!automaticTourActive && (
+            <button
+              type="button"
+              className="sd-automatic-tour-launch"
+              onClick={startAutomaticTour}
+              disabled={branchTransitioning}
+              aria-label="بدء العرض التلقائي الكامل لفرعي خميس مشيط وأبها"
+            >
+              <span className="sd-automatic-tour-launch__icon"><Play aria-hidden="true" fill="currentColor" /></span>
+              <span className="sd-automatic-tour-launch__copy">
+                <strong>عرض تلقائي</strong>
+                <small>يبدأ بعد 5 دقائق من عدم التفاعل</small>
+              </span>
+            </button>
+          )}
         </section>
       )}
 
@@ -3684,6 +4019,8 @@ export function CinematicScreenExperience() {
           onReturnToBranches={showBranchChoice}
           cinematicEnabled={cinematicEnabled}
           onCalibrationChange={handleLayoutEditingChange}
+          automaticTourActive={automaticTourActive}
+          onAutomaticTourComplete={finishAutomaticTour}
         />
       )}
 

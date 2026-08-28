@@ -7,6 +7,7 @@ import type { Map as MapboxMap, Marker as MapboxMarker } from "mapbox-gl";
 import { BranchInteractiveScenes } from "@/components/saudident/BranchInteractiveScenes";
 import type { BranchSceneId } from "@/data/branch-interactive-scenes";
 import { branches } from "@/data/saudident";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
 
 type BranchId = BranchSceneId;
 type MapFirstScene = "map" | "focusing" | "branch";
@@ -294,10 +295,8 @@ export function MapFirstExperience({
     <div ref={rootRef} className={`sd-map-first is-${scene}${demoActive ? " is-demo" : ""}${presentationMode ? " is-presentation" : ""}`} dir="rtl">
       <div className="sd-map-first__chrome">
         <Image
-          src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+          {...SAUDIDENT_LOGOS.white}
           alt="سعودي دنت"
-          width={4096}
-          height={1139}
           priority
           unoptimized
         />

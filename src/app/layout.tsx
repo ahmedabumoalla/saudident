@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { RemoteUpdateReloader } from "@/components/saudident/RemoteUpdateReloader";
 import "./globals.css";
 
 const saudiDentArabic = IBM_Plex_Sans_Arabic({
@@ -34,5 +35,12 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ar" dir="rtl"><body className={saudiDentArabic.variable}>{children}</body></html>;
+  return (
+    <html lang="ar" dir="rtl">
+      <body className={saudiDentArabic.variable}>
+        <RemoteUpdateReloader />
+        {children}
+      </body>
+    </html>
+  );
 }

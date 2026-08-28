@@ -3267,7 +3267,6 @@ video {
 .sd-branch-choice__logo {
   width: clamp(190px, 26vw, 310px);
   height: auto;
-  filter: brightness(0) saturate(100%) invert(20%) sepia(19%) saturate(1483%) hue-rotate(137deg) brightness(91%);
 }
 
 .sd-branch-choice__panel > p {
@@ -3376,6 +3375,208 @@ video {
   color: currentColor;
   font-size: 0.9rem;
   opacity: 0.7;
+}
+
+.sd-automatic-tour-launch {
+  position: absolute;
+  z-index: 76;
+  left: max(clamp(16px, 2.3vw, 34px), env(safe-area-inset-left));
+  bottom: max(clamp(16px, 2.3vw, 34px), env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  min-height: 58px;
+  padding: 0.58rem 0.72rem 0.58rem 1rem;
+  border: 1px solid rgba(16, 121, 122, 0.3);
+  border-radius: 18px;
+  background: rgba(7, 50, 70, 0.92);
+  color: #fff;
+  font: inherit;
+  text-align: right;
+  box-shadow: 0 14px 36px rgba(8, 54, 67, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+  touch-action: manipulation;
+  animation: sd-automatic-tour-launch-in 560ms cubic-bezier(0.22, 1, 0.36, 1) 520ms both;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.sd-automatic-tour-launch:hover,
+.sd-automatic-tour-launch:focus-visible {
+  border-color: rgba(62, 217, 158, 0.72);
+  background: rgba(5, 63, 77, 0.97);
+  box-shadow: 0 18px 42px rgba(8, 54, 67, 0.26), 0 0 0 5px rgba(62, 217, 158, 0.1);
+  transform: translateY(-2px);
+}
+
+.sd-automatic-tour-launch:focus-visible {
+  outline: 3px solid rgba(42, 198, 129, 0.42);
+  outline-offset: 3px;
+}
+
+.sd-automatic-tour-launch:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.sd-automatic-tour-launch__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: #2ac681;
+  color: #062f35;
+  box-shadow: 0 8px 20px rgba(42, 198, 129, 0.26);
+}
+
+.sd-automatic-tour-launch__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sd-automatic-tour-launch__copy {
+  display: grid;
+  gap: 0.06rem;
+}
+
+.sd-automatic-tour-launch__copy strong {
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.sd-automatic-tour-launch__copy small {
+  color: rgba(231, 249, 247, 0.7);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.sd-automatic-tour-control {
+  position: absolute;
+  z-index: 520;
+  top: max(clamp(14px, 2vw, 28px), env(safe-area-inset-top));
+  left: max(clamp(14px, 2vw, 28px), env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: min(88vw, 560px);
+  pointer-events: none;
+}
+
+.sd-automatic-tour-control__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(4, 31, 40, 0.8);
+  color: rgba(244, 252, 251, 0.88);
+  font-size: clamp(0.68rem, 0.92vw, 0.82rem);
+  box-shadow: 0 12px 34px rgba(1, 18, 24, 0.2);
+  backdrop-filter: blur(16px);
+}
+
+.sd-automatic-tour-control__status i {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #42d996;
+  box-shadow: 0 0 0 4px rgba(66, 217, 150, 0.14);
+}
+
+.sd-automatic-tour-control__status span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sd-automatic-tour-control > button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  min-height: 48px;
+  padding: 0.55rem 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0b4650;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(2, 25, 33, 0.22);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  animation: sd-automatic-tour-exit-pulse 2.4s ease-in-out infinite;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.sd-automatic-tour-control > button:hover,
+.sd-automatic-tour-control > button:focus-visible {
+  background: #fff;
+  color: #073246;
+  transform: translateY(-1px);
+}
+
+.sd-automatic-tour-control > button:focus-visible {
+  outline: 3px solid rgba(42, 198, 129, 0.52);
+  outline-offset: 3px;
+}
+
+.sd-automatic-tour-control > button svg {
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes sd-automatic-tour-launch-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sd-automatic-tour-exit-pulse {
+  0%, 58%, 100% { box-shadow: 0 12px 30px rgba(2, 25, 33, 0.22), 0 0 0 0 rgba(66, 217, 150, 0); }
+  72% { box-shadow: 0 12px 30px rgba(2, 25, 33, 0.22), 0 0 0 7px rgba(66, 217, 150, 0.22); }
+  86% { box-shadow: 0 12px 30px rgba(2, 25, 33, 0.22), 0 0 0 11px rgba(66, 217, 150, 0); }
+}
+
+@media (max-width: 640px) {
+  .sd-automatic-tour-launch {
+    position: fixed;
+    min-height: 52px;
+    padding: 0.45rem 0.55rem 0.45rem 0.75rem;
+  }
+
+  .sd-automatic-tour-launch__icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sd-automatic-tour-launch__copy small,
+  .sd-automatic-tour-control__status {
+    display: none;
+  }
+
+  .sd-automatic-tour-control {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-automatic-tour-launch,
+  .sd-automatic-tour-control > button {
+    animation: none !important;
+  }
+
+  .sd-automatic-tour-control > button {
+    box-shadow: 0 12px 30px rgba(2, 25, 33, 0.22), 0 0 0 4px rgba(66, 217, 150, 0.2);
+  }
 }
 
 .sd-abha-placeholder {
@@ -4616,7 +4817,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
     rgba(2, 18, 22, 0.76);
   font-family: "Salma Arabic", var(--font-sd-arabic), Arial, sans-serif;
   backdrop-filter: blur(14px) saturate(0.76);
-  animation: sd-patient-relations-backdrop-in 320ms ease both;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
   outline: none;
 }
 
@@ -4634,7 +4837,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   color: #153f46;
   box-shadow: 0 36px 100px rgba(0, 17, 22, 0.48), inset 0 1px #fff;
   text-align: center;
-  animation: sd-patient-relations-panel-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity, filter;
 }
 
 .sd-patient-relations__panel::before {
@@ -4678,7 +4883,6 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   width: clamp(170px, 20vw, 230px);
   height: auto;
   margin-bottom: 1.2rem;
-  filter: brightness(0) saturate(100%) invert(20%) sepia(19%) saturate(1483%) hue-rotate(137deg) brightness(91%);
 }
 
 .sd-patient-relations__symbol {
@@ -6107,7 +6311,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
     rgba(2, 18, 22, 0.78);
   font-family: "Salma Arabic", var(--font-sd-arabic), Arial, sans-serif;
   backdrop-filter: blur(14px) saturate(0.76);
-  animation: sd-patient-relations-backdrop-in 320ms ease both;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
   outline: none;
 }
 
@@ -6125,7 +6331,9 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   color: #153f46;
   box-shadow: 0 36px 100px rgba(0, 17, 22, 0.5), inset 0 1px #fff;
   text-align: center;
-  animation: sd-patient-relations-panel-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity, filter;
 }
 
 .sd-main-feature__close {
@@ -6156,7 +6364,6 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   width: clamp(165px, 19vw, 225px);
   height: auto;
   margin-bottom: 1.05rem;
-  filter: brightness(0) saturate(100%) invert(20%) sepia(19%) saturate(1483%) hue-rotate(137deg) brightness(91%);
 }
 
 .sd-main-feature__reception-image {
@@ -6540,7 +6747,6 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(18%) sepia(34%) saturate(1119%) hue-rotate(149deg) brightness(91%);
 }
 
 .sd-screen-presentation__brand p {
@@ -8211,7 +8417,6 @@ button.sd-conference-floor-arrow:focus-visible .sd-conference-floor-arrow__proje
   width: min(100%, 190px);
   height: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .sd-premium-sterilization__image {

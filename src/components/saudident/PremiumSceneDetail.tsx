@@ -8,6 +8,7 @@ import { prototypeClinicDoctorAssignments } from "@/data/khamis-floor-map";
 import { doctors, saudident, services } from "@/data/saudident";
 import { DentalIcon } from "@/components/saudident/icons/dental-icons";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
 
 type HubView = "home" | "doctors" | "appointments" | "services" | "offers";
 
@@ -32,10 +33,8 @@ function SaudiDentLogo() {
     <span className="sd-premium-detail__logo-wrap">
       <Image
         className="sd-premium-detail__logo"
-        src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+        {...SAUDIDENT_LOGOS.white}
         alt="سعودي دنت"
-        width={180}
-        height={50}
         priority
       />
     </span>
@@ -190,10 +189,8 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
         <div className="sd-premium-waiting__brand">
           <Image
             className="sd-premium-waiting__logo"
-            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            {...SAUDIDENT_LOGOS.white}
             alt="سعودي دنت"
-            width={4096}
-            height={1139}
             priority
           />
         </div>
@@ -208,10 +205,8 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
         <div className="sd-premium-waiting__brand">
           <Image
             className="sd-premium-waiting__logo"
-            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            {...SAUDIDENT_LOGOS.white}
             alt="سعودي دنت"
-            width={4096}
-            height={1139}
             priority
           />
         </div>
@@ -236,10 +231,8 @@ function FocusedDetail({ hotspot }: { hotspot: BranchSceneHotspot }) {
       <div className="sd-premium-sterilization">
         <div className="sd-premium-sterilization__brand">
           <Image
-            src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+            {...SAUDIDENT_LOGOS.white}
             alt="سعودي دنت"
-            width={4096}
-            height={1139}
             priority
           />
         </div>

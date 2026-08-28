@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Apple, Menu, Play, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { saudident } from "@/data/saudident";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
 
 const links = [
   ["عن سعودي دنت", "#about"],
@@ -106,10 +107,8 @@ export function CinematicHeader() {
     >
       <a className="sd-header__logo" href="#top" aria-label="سعودي دنت — العودة للبداية">
         <Image
-          src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+          {...SAUDIDENT_LOGOS.white}
           alt="سعودي دنت"
-          width={4096}
-          height={1139}
           sizes="(max-width: 820px) 140px, 170px"
           unoptimized
           priority

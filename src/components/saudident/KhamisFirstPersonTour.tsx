@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Footprints, Maximize, MousePointer2 } from "lucide-react";
 import * as THREE from "three";
 import styles from "./KhamisFirstPersonTour.module.css";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
 
 type TourStatus = "loading" | "ready" | "error";
 type MoveKey = "forward" | "back" | "left" | "right";
@@ -314,7 +315,7 @@ export function KhamisFirstPersonTour() {
 
     // Saudi Dent illuminated logo over the dark marble.
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load("/branding/intro/SaudiDent_MASTER_transparent_4K.png", (texture) => {
+    textureLoader.load(SAUDIDENT_LOGOS.white.src, (texture) => {
       if (disposed) return;
       texture.colorSpace = THREE.SRGBColorSpace;
       const logo = new THREE.Mesh(

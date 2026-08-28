@@ -21,6 +21,7 @@ import {
   type LayoutEditorAddition,
 } from "@/components/saudident/ConferenceLayoutEditor";
 import savedAbhaTourLayout from "@/data/abha-tour-layout.json";
+import { AUTOMATIC_TOUR_TIMING, getReadingDwellMs } from "@/data/automatic-tour";
 import savedConferenceLayout from "@/data/conference-layout.json";
 import {
   abhaTourItemLabels,
@@ -30,11 +31,15 @@ import {
   type AbhaTourOverlay,
 } from "@/data/abha-tour";
 import { gsap } from "@/lib/gsap";
+import { SAUDIDENT_LOGOS } from "@/lib/brand";
+import { playCinematicDialogEntrance, playCinematicDialogExit } from "@/lib/cinematic-dialog-motion";
 
 type AbhaTourExperienceProps = {
   onReturnToBranches: () => void;
   cinematicEnabled?: boolean;
   onCalibrationChange?: (active: boolean) => void;
+  automaticTourActive?: boolean;
+  onAutomaticTourComplete?: () => void;
 };
 
 const INITIAL_CONTROLS_REVEAL_MS = 820;
@@ -128,12 +133,19 @@ export function AbhaTourExperience({
   onReturnToBranches,
   cinematicEnabled = true,
   onCalibrationChange,
+  automaticTourActive = false,
+  onAutomaticTourComplete,
 }: AbhaTourExperienceProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const transitionRef = useRef<gsap.core.Timeline | null>(null);
   const transitionLockedRef = useRef(false);
   const hasScheduledInitialRevealRef = useRef(false);
   const navigationHistoryRef = useRef<number[]>([]);
+  const sceneIndexRef = useRef(0);
+  const automaticTourSessionRef = useRef(0);
+  const automaticTourWaitRef = useRef<number | null>(null);
+  const onAutomaticTourCompleteRef = useRef(onAutomaticTourComplete);
+  const activeFeatureDialogRef = useRef<HTMLDivElement>(null);
   const [sceneIndex, setSceneIndex] = useState(0);
   const [incomingSceneIndex, setIncomingSceneIndex] = useState<number | null>(null);
   const [items, setItems] = useState<AbhaTourOverlay[]>(() => savedAbhaTourLayout as AbhaTourOverlay[]);
@@ -146,6 +158,27 @@ export function AbhaTourExperience({
   const scene = abhaTourScenes[sceneIndex];
   const activeItem = activeItemId ? items.find((item) => item.id === activeItemId) ?? null : null;
   const activeItemContent = activeItem ? getAbhaTourItemContent(activeItem) : null;
+
+  const closeActiveItem = useCallback(() => {
+    const overlay = activeFeatureDialogRef.current;
+    const panel = overlay?.querySelector<HTMLElement>(".sd-main-feature__panel");
+    if (!overlay || !panel) {
+      setActiveItemId(null);
+      return;
+    }
+    playCinematicDialogExit(overlay, panel, () => setActiveItemId(null));
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!activeItemId) return;
+    const overlay = activeFeatureDialogRef.current;
+    const panel = overlay?.querySelector<HTMLElement>(".sd-main-feature__panel");
+    if (!overlay || !panel) return;
+    const motion = playCinematicDialogEntrance(overlay, panel);
+    return () => {
+      motion?.kill();
+    };
+  }, [activeItemId]);
 
   useLayoutEffect(() => {
     const player = rootRef.current;
@@ -183,13 +216,14 @@ export function AbhaTourExperience({
   }, [calibrationActive, cinematicEnabled, sceneIndex, transitioning]);
 
   const goToScene = useCallback(async (index: number, recordHistory = true) => {
-    if (transitionLockedRef.current) return;
+    if (transitionLockedRef.current) return false;
+    const currentSceneIndex = sceneIndexRef.current;
     const targetIndex = (index + abhaTourScenes.length) % abhaTourScenes.length;
-    if (targetIndex === sceneIndex) return;
-    if (recordHistory) navigationHistoryRef.current.push(sceneIndex);
-    const direction = targetIndex === 0 && sceneIndex === abhaTourScenes.length - 1
+    if (targetIndex === currentSceneIndex) return true;
+    if (recordHistory) navigationHistoryRef.current.push(currentSceneIndex);
+    const direction = targetIndex === 0 && currentSceneIndex === abhaTourScenes.length - 1
       ? 1
-      : targetIndex > sceneIndex ? 1 : -1;
+      : targetIndex > currentSceneIndex ? 1 : -1;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     setAnnouncement("");
@@ -201,73 +235,90 @@ export function AbhaTourExperience({
 
     await waitForTourImage(abhaTourScenes[targetIndex].image);
 
-    if (!cinematicEnabled || calibrationActive || reducedMotion) {
+    if (!cinematicEnabled || (calibrationActive && !automaticTourActive) || reducedMotion) {
+      sceneIndexRef.current = targetIndex;
       setSceneIndex(targetIndex);
       setIncomingSceneIndex(null);
       transitionLockedRef.current = false;
       setTransitioning(false);
-      return;
+      return true;
     }
 
-    setIncomingSceneIndex(targetIndex);
-    window.requestAnimationFrame(() => {
+    return new Promise<boolean>((resolve) => {
+      let settled = false;
+      const settle = (completed: boolean) => {
+        if (settled) return;
+        settled = true;
+        transitionLockedRef.current = false;
+        setTransitioning(false);
+        resolve(completed);
+      };
+
+      setIncomingSceneIndex(targetIndex);
       window.requestAnimationFrame(() => {
-        const root = rootRef.current;
-        const currentMedia = root?.querySelector<HTMLElement>(".sd-abha-tour__media--current");
-        const incomingMedia = root?.querySelector<HTMLElement>(".sd-abha-tour__media--incoming");
-        const incomingPhoto = incomingMedia?.querySelector<HTMLElement>(".sd-abha-tour__photo");
-        const light = root?.querySelector<HTMLElement>(".sd-abha-tour__transition-light");
+        window.requestAnimationFrame(() => {
+          const root = rootRef.current;
+          const currentMedia = root?.querySelector<HTMLElement>(".sd-abha-tour__media--current");
+          const incomingMedia = root?.querySelector<HTMLElement>(".sd-abha-tour__media--incoming");
+          const incomingPhoto = incomingMedia?.querySelector<HTMLElement>(".sd-abha-tour__photo");
+          const light = root?.querySelector<HTMLElement>(".sd-abha-tour__transition-light");
 
-        if (!currentMedia || !incomingMedia) {
-          setSceneIndex(targetIndex);
-          setIncomingSceneIndex(null);
-          transitionLockedRef.current = false;
-          setTransitioning(false);
-          return;
-        }
+          if (!currentMedia || !incomingMedia) {
+            sceneIndexRef.current = targetIndex;
+            setSceneIndex(targetIndex);
+            setIncomingSceneIndex(null);
+            settle(true);
+            return;
+          }
 
-        const finishTransition = () => {
-          setSceneIndex(targetIndex);
-          setIncomingSceneIndex(null);
-          transitionLockedRef.current = false;
-          setTransitioning(false);
-        };
-        const timeline = gsap.timeline({
-          defaults: { overwrite: "auto" },
-          onComplete: finishTransition,
-        });
-        transitionRef.current = timeline;
-        timeline.fromTo(
-          incomingMedia,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.72, ease: "power2.inOut" },
-          0,
-        );
-        if (incomingPhoto) {
+          const finishTransition = () => {
+            sceneIndexRef.current = targetIndex;
+            setSceneIndex(targetIndex);
+            setIncomingSceneIndex(null);
+            settle(true);
+          };
+          const interruptTransition = () => {
+            setIncomingSceneIndex(null);
+            settle(false);
+          };
+          const timeline = gsap.timeline({
+            defaults: { overwrite: "auto" },
+            onComplete: finishTransition,
+            onInterrupt: interruptTransition,
+          });
+          transitionRef.current = timeline;
           timeline.fromTo(
-            incomingPhoto,
-            { scale: 1.018, filter: "brightness(1.035)" },
-            { scale: 1, filter: "brightness(1)", duration: 0.86, ease: "power3.out" },
+            incomingMedia,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: 0.72, ease: "power2.inOut" },
             0,
           );
-        }
-        timeline.to(
-          currentMedia,
-          { scale: 1.006, filter: "brightness(0.96)", duration: 0.72, ease: "power2.inOut" },
-          0,
-        );
-        if (light) {
-          timeline.fromTo(
-            light,
-            { autoAlpha: 0, xPercent: 74 * direction },
-            { autoAlpha: 0.34, xPercent: -74 * direction, duration: 0.62, ease: "power2.inOut" },
-            0.04,
+          if (incomingPhoto) {
+            timeline.fromTo(
+              incomingPhoto,
+              { scale: 1.018, filter: "brightness(1.035)" },
+              { scale: 1, filter: "brightness(1)", duration: 0.86, ease: "power3.out" },
+              0,
+            );
+          }
+          timeline.to(
+            currentMedia,
+            { scale: 1.006, filter: "brightness(0.96)", duration: 0.72, ease: "power2.inOut" },
+            0,
           );
-          timeline.to(light, { autoAlpha: 0, duration: 0.2, ease: "power2.out" }, 0.5);
-        }
+          if (light) {
+            timeline.fromTo(
+              light,
+              { autoAlpha: 0, xPercent: 74 * direction },
+              { autoAlpha: 0.34, xPercent: -74 * direction, duration: 0.62, ease: "power2.inOut" },
+              0.04,
+            );
+            timeline.to(light, { autoAlpha: 0, duration: 0.2, ease: "power2.out" }, 0.5);
+          }
+        });
       });
     });
-  }, [calibrationActive, cinematicEnabled, sceneIndex]);
+  }, [automaticTourActive, calibrationActive, cinematicEnabled]);
 
   const returnToPreviousScene = useCallback(() => {
     const history = navigationHistoryRef.current;
@@ -294,13 +345,83 @@ export function AbhaTourExperience({
   }, []);
 
   useEffect(() => {
+    onAutomaticTourCompleteRef.current = onAutomaticTourComplete;
+  }, [onAutomaticTourComplete]);
+
+  const isAutomaticTourSession = useCallback((session: number) => (
+    automaticTourActive && automaticTourSessionRef.current === session
+  ), [automaticTourActive]);
+
+  const waitForAutomaticTour = useCallback((session: number, duration: number) => new Promise<boolean>((resolve) => {
+    if (!isAutomaticTourSession(session)) {
+      resolve(false);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      automaticTourWaitRef.current = null;
+      resolve(isAutomaticTourSession(session));
+    }, duration);
+    automaticTourWaitRef.current = timer;
+  }), [isAutomaticTourSession]);
+
+  useEffect(() => {
+    if (!automaticTourActive) return;
+
+    const session = ++automaticTourSessionRef.current;
+    navigationHistoryRef.current = [];
+
+    const runAutomaticTour = async () => {
+      if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.sceneArrivalMs)) return;
+
+      for (let index = 0; index < abhaTourScenes.length; index += 1) {
+        if (sceneIndexRef.current !== index) {
+          if (!await goToScene(index, false)) return;
+          if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.sceneArrivalMs)) return;
+        }
+
+        const sceneItems = items.filter((item) => item.sceneId === abhaTourScenes[index].id && item.kind !== "arrow");
+        for (const item of sceneItems) {
+          if (!isAutomaticTourSession(session)) return;
+          const itemContent = getAbhaTourItemContent(item);
+          setActiveItemId(item.id);
+          setAnnouncement(`عرض ${abhaTourItemLabels[item.kind]}`);
+
+          if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.dialogEnterMs)) return;
+          if (!await waitForAutomaticTour(session, getReadingDwellMs(
+            itemContent?.eyebrow,
+            itemContent?.title,
+            itemContent?.message,
+          ))) return;
+          closeActiveItem();
+          if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.dialogExitMs)) return;
+          if (!await waitForAutomaticTour(session, AUTOMATIC_TOUR_TIMING.betweenFeaturesMs)) return;
+        }
+      }
+
+      if (!isAutomaticTourSession(session)) return;
+      setActiveItemId(null);
+      setAnnouncement("اكتملت جولة فرع أبها");
+      onAutomaticTourCompleteRef.current?.();
+    };
+
+    void runAutomaticTour();
+    return () => {
+      automaticTourSessionRef.current += 1;
+      if (automaticTourWaitRef.current !== null) {
+        window.clearTimeout(automaticTourWaitRef.current);
+        automaticTourWaitRef.current = null;
+      }
+    };
+  }, [automaticTourActive, closeActiveItem, goToScene, isAutomaticTourSession, items, waitForAutomaticTour]);
+
+  useEffect(() => {
     if (!activeItemId) return;
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveItemId(null);
+      if (event.key === "Escape") closeActiveItem();
     };
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [activeItemId]);
+  }, [activeItemId, closeActiveItem]);
 
   const handleEditingChange = useCallback((active: boolean) => {
     setCalibrationActive(active);
@@ -433,9 +554,10 @@ export function AbhaTourExperience({
   return (
     <div
       ref={rootRef}
-      className={`sd-abha-tour${cinematicEnabled ? " is-cinematic" : ""}${coordinatesReady ? " is-coordinate-ready" : ""}${calibrationActive ? " is-calibrating" : ""}${transitioning ? " is-transitioning" : ""}${controlsReady ? " are-controls-ready" : ""}`}
+      className={`sd-abha-tour${cinematicEnabled ? " is-cinematic" : ""}${coordinatesReady ? " is-coordinate-ready" : ""}${calibrationActive && !automaticTourActive ? " is-calibrating" : ""}${transitioning ? " is-transitioning" : ""}${controlsReady ? " are-controls-ready" : ""}${automaticTourActive ? " is-automatic-tour" : ""}`}
       role="region"
       aria-label="الجولة التفاعلية في فرع أبها"
+      inert={automaticTourActive}
     >
       {renderSceneMedia(sceneIndex, "current")}
       {incomingSceneIndex !== null && renderSceneMedia(incomingSceneIndex, "incoming")}
@@ -501,19 +623,20 @@ export function AbhaTourExperience({
 
       {activeItem && activeItemContent && (
         <div
+          ref={activeFeatureDialogRef}
           className={`sd-main-feature sd-abha-tour__feature is-${activeItem.kind}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="sd-abha-feature-title"
           onClick={(event) => {
-            if (event.target === event.currentTarget) setActiveItemId(null);
+            if (event.target === event.currentTarget) closeActiveItem();
           }}
         >
           <article className="sd-main-feature__panel">
             <button
               type="button"
               className="sd-main-feature__close"
-              onClick={() => setActiveItemId(null)}
+              onClick={closeActiveItem}
               aria-label="إغلاق النافذة"
             >
               <X aria-hidden="true" />
@@ -521,10 +644,8 @@ export function AbhaTourExperience({
 
             <Image
               className="sd-main-feature__logo"
-              src="/branding/intro/SaudiDent_MASTER_transparent_4K.png"
+              {...SAUDIDENT_LOGOS.navy}
               alt="سعودي دنت"
-              width={4096}
-              height={1139}
               unoptimized
             />
 
@@ -538,16 +659,18 @@ export function AbhaTourExperience({
         </div>
       )}
 
-      <ConferenceLayoutEditor
-        key={scene.id}
-        rootRef={rootRef}
-        activeScene={scene.id}
-        additions={EDITOR_ADDITIONS}
-        onAddControl={addItem}
-        onRemoveControl={removeItem}
-        onEditingChange={handleEditingChange}
-        refreshKey={`${scene.id}-${items.filter((item) => item.sceneId === scene.id).length}`}
-      />
+      {!automaticTourActive && (
+        <ConferenceLayoutEditor
+          key={scene.id}
+          rootRef={rootRef}
+          activeScene={scene.id}
+          additions={EDITOR_ADDITIONS}
+          onAddControl={addItem}
+          onRemoveControl={removeItem}
+          onEditingChange={handleEditingChange}
+          refreshKey={`${scene.id}-${items.filter((item) => item.sceneId === scene.id).length}`}
+        />
+      )}
 
     </div>
   );
